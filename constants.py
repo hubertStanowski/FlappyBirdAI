@@ -1,5 +1,6 @@
 import pygame
 
+
 WINDOW_WIDTH = 480
 WINDOW_HEIGHT = 640
 
@@ -16,7 +17,6 @@ PIPE_IMG = pygame.image.load("images/pipe.png")
 TOP = 1
 BOTTOM = 0
 PIPE_GAP = 150
-PIPE_FREQUENCY = 2000
 
 WHITE = (255, 255, 255)
 SKY_COLOR = (102, 178, 255)
