@@ -14,8 +14,8 @@ class Pipe:
             self.hitbox.topleft = (x, y + round(PIPE_GAP / 2))
 
     def draw(self, window) -> None:
-        # window.blit(self.img, self.hitbox)
-        pygame.draw.rect(window, (0, 255, 0), self.hitbox)
+        window.blit(self.img, self.hitbox)
+        # pygame.draw.rect(window, (0, 255, 0), self.hitbox)
 
     def update(self):
         self.hitbox.x -= SCROLL_SPEED
@@ -38,4 +38,7 @@ class PipeSet:
         self.top.update()
 
     def is_offscreen(self):
-        return self.bottom.hitbox.right
+        return self.bottom.hitbox.right < 0
+
+    def collides(self, player):
+        return self.bottom.hitbox.colliderect(player.hitbox) or self.top.hitbox.colliderect(player.hitbox)
