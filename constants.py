@@ -1,13 +1,13 @@
 import pygame
 
-GAME_WIDTH = 480
-GAME_HEIGHT = 640
+WINDOW_WIDTH = 480
+WINDOW_HEIGHT = 640
 
-HORIZONTAL_SPEED = 5
-VERTICAL_SPEED_CAP = -10
+SCROLL_SPEED = 3
 GRAVITY = 0.5
 
 PLAYER_IMG = pygame.image.load("images/bird.png")
-
+GROUND_IMG = pygame.image.load("images/ground.png")
 
 WHITE = (255, 255, 255)
+SKY_COLOR = (102, 178, 255)

@@ -6,20 +6,27 @@ import pygame
 
 def main():
     pygame.init()
-    display_info = pygame.display.Info()
-    window = pygame.display.set_mode(
-        (display_info.current_w, display_info.current_h))
+    window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
     pygame.display.set_caption("Flappy Bird AI")
 
     clock = pygame.time.Clock()
     player = Player(100, 100)
+    ground_scroll = 0
 
     while True:
         clock.tick(60)
 
-        window.fill(WHITE)
+        window.fill(SKY_COLOR)
         player.draw(window)
+        window.blit(GROUND_IMG, (ground_scroll,
+                    WINDOW_HEIGHT-GROUND_IMG.get_height()))
+
+        ground_scroll -= SCROLL_SPEED
+
+        if abs(ground_scroll) > 50:
+            ground_scroll = 0
+
         pygame.display.update()
         player.move()
 
