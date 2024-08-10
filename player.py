@@ -11,7 +11,7 @@ class Player:
         self.hitbox = self.img.get_rect()
         self.hitbox.center = (x, y)
         self.vel_y = 0
-        self.pipes = deque([PipeSet(), PipeSet(x_offset=WINDOW_WIDTH//2)])
+        self.pipes = deque([PipeSet(), PipeSet(x_offset=PIPE_SEPERATION)])
         self.ground = Ground()
         self.alive = True
         self.on_ground = False
@@ -46,16 +46,15 @@ class Player:
 
     def flap(self):
         if self.alive:
-            self.vel_y = -8
+            self.vel_y = -FLAP_SPEED
 
     def check_collisions(self):
         for pipeset in self.pipes:
             if pipeset.collides(self):
                 self.alive = False
-                return True
 
         self.on_ground = self.ground.collides(self)
         if self.on_ground:
             self.alive = False
 
-        return False
+        return self.alive

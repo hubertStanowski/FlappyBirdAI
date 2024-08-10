@@ -1,9 +1,7 @@
 from constants import *
 from player import Player
-from pipe import Pipe
 
 import pygame
-import random
 
 
 def main():
