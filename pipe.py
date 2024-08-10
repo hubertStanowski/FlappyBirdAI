@@ -15,7 +15,6 @@ class Pipe:
 
     def draw(self, window) -> None:
         window.blit(self.img, self.hitbox)
-        # pygame.draw.rect(window, (0, 255, 0), self.hitbox)
 
     def update(self):
         self.hitbox.x -= SCROLL_SPEED

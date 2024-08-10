@@ -1,5 +1,6 @@
 from constants import *
 from pipe import PipeSet
+from ground import Ground
 
 from collections import deque
 
@@ -11,6 +12,7 @@ class Player:
         self.hitbox.center = (x, y)
         self.vel_y = 0
         self.pipes = deque([PipeSet(), PipeSet(x_offset=WINDOW_WIDTH//2)])
+        self.ground = Ground()
         self.alive = True
         self.on_ground = False
 
@@ -18,9 +20,13 @@ class Player:
         for pipeset in self.pipes:
             pipeset.draw(window)
 
+        self.ground.draw(window)
         window.blit(self.img, self.hitbox)
 
     def update(self):
+        if self.on_ground:
+            return
+
         self.vel_y += GRAVITY
         self.hitbox.y += self.vel_y
 
@@ -36,6 +42,8 @@ class Player:
             self.pipes.popleft()
             self.pipes.append(PipeSet())
 
+        self.ground.update()
+
     def flap(self):
         if self.alive:
             self.vel_y = -8
@@ -45,5 +53,9 @@ class Player:
             if pipeset.collides(self):
                 self.alive = False
                 return True
+
+        self.on_ground = self.ground.collides(self)
+        if self.on_ground:
+            self.alive = False
 
         return False
