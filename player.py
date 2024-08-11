@@ -27,14 +27,15 @@ class Player:
         elif self.vel < 10:
             current_img = pygame.transform.rotate(self.img, 30)
         else:
-            print(self.vel)
-            current_img = pygame.transform.rotate(self.img, -90)
+            angle = max(30 - (self.vel - 10) * 12, -90)
+            current_img = pygame.transform.rotate(self.img, angle)
 
         window.blit(current_img, self.hitbox)
 
     def update(self):
         if self.on_ground or not self.flying:
             return
+
         self.vel += GRAVITY
         self.hitbox.y += self.vel
 
