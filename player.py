@@ -10,25 +10,33 @@ class Player:
         self.img = PLAYER_IMG
         self.hitbox = self.img.get_rect()
         self.hitbox.center = (x, y)
-        self.vel_y = 0
+        self.vel = 0
         self.pipes = deque([PipeSet(), PipeSet(x_offset=PIPE_SEPERATION)])
         self.ground = Ground()
         self.alive = True
         self.on_ground = False
+        self.flying = False
 
     def draw(self, window) -> None:
         for pipeset in self.pipes:
             pipeset.draw(window)
 
         self.ground.draw(window)
-        window.blit(self.img, self.hitbox)
+        if not self.flying:
+            current_img = self.img
+        elif self.vel < 10:
+            current_img = pygame.transform.rotate(self.img, 30)
+        else:
+            print(self.vel)
+            current_img = pygame.transform.rotate(self.img, -90)
+
+        window.blit(current_img, self.hitbox)
 
     def update(self):
-        if self.on_ground:
+        if self.on_ground or not self.flying:
             return
-
-        self.vel_y += GRAVITY
-        self.hitbox.y += self.vel_y
+        self.vel += GRAVITY
+        self.hitbox.y += self.vel
 
         self.check_collisions()
 
@@ -46,7 +54,8 @@ class Player:
 
     def flap(self):
         if self.alive:
-            self.vel_y = -FLAP_SPEED
+            self.flying = True
+            self.vel = -FLAP_SPEED
 
     def check_collisions(self):
         for pipeset in self.pipes:

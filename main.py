@@ -14,8 +14,6 @@ def main():
     clock = pygame.time.Clock()
     player = Player(WINDOW_WIDTH // 3, WINDOW_HEIGHT // 2)
 
-    flying = False
-
     while True:
         clock.tick(60)
         window.blit(BACKGROUND_IMG, (0, 0))
@@ -23,15 +21,13 @@ def main():
         player.draw(window)
         pygame.display.update()
 
-        if flying:
-            player.update()
+        player.update()
 
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
             if event.type == pygame.KEYDOWN:
                 if event.key == pygame.K_SPACE:
-                    flying = True
                     player.flap()
 
 
