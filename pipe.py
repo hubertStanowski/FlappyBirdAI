@@ -1,4 +1,5 @@
 from constants import *
+
 import random
 
 
@@ -27,6 +28,7 @@ class PipeSet:
                            WINDOW_HEIGHT // 2 + pipe_height, BOTTOM)
         self.top = Pipe(WINDOW_WIDTH+x_offset,
                         WINDOW_HEIGHT // 2 + pipe_height, TOP)
+        self.passed = False
 
     def draw(self, window):
         self.bottom.draw(window)
@@ -45,4 +47,12 @@ class PipeSet:
 
         off_screen = (self.top.hitbox.x ==
                       player.hitbox.x) and player.hitbox.y < 0
+
         return on_screen or off_screen
+
+    def check_passed(self, player):
+        if self.top.hitbox.right < player.hitbox.x and not self.passed:
+            self.passed = True
+            return True
+
+        return False

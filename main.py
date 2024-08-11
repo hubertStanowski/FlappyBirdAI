@@ -12,12 +12,12 @@ def main():
     pygame.display.set_caption("Flappy Bird AI")
 
     clock = pygame.time.Clock()
-    player = Player(WINDOW_WIDTH // 3, WINDOW_HEIGHT // 2)
+    player = Player(x=(WINDOW_WIDTH // 3), y=(WINDOW_HEIGHT // 2))
 
     while True:
         clock.tick(60)
-        window.blit(BACKGROUND_IMG, (0, 0))
 
+        window.blit(BACKGROUND_IMG, (0, 0))
         player.draw(window)
         pygame.display.update()
 

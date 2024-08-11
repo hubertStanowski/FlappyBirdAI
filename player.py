@@ -16,12 +16,16 @@ class Player:
         self.alive = True
         self.on_ground = False
         self.flying = False
+        self.score = 0
 
     def draw(self, window) -> None:
         for pipeset in self.pipes:
             pipeset.draw(window)
 
         self.ground.draw(window)
+
+        self.display_score(window)
+
         if not self.flying:
             current_img = self.img
         elif self.vel < 10:
@@ -44,6 +48,9 @@ class Player:
         change = False
         for pipeset in self.pipes:
             pipeset.update()
+            if pipeset.check_passed(self):
+                self.score += 1
+                print(self.score)
             if pipeset.is_offscreen():
                 change = True
 
@@ -68,3 +75,10 @@ class Player:
             self.alive = False
 
         return self.alive
+
+    def display_score(self, window):
+        font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
+        score_label = font.render(str(self.score), True, WHITE)
+        score_rect = score_label.get_rect(center=(WINDOW_WIDTH // 2, 30))
+
+        window.blit(score_label, score_rect)

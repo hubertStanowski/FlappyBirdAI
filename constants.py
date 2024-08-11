@@ -4,6 +4,10 @@ import pygame
 WINDOW_WIDTH = 480
 WINDOW_HEIGHT = 640
 
+# Font
+FONT = None
+SCORE_FONT_SIZE = 70
+
 # Speed
 SCROLL_SPEED = 3
 GRAVITY = 0.5
