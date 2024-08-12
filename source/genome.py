@@ -7,7 +7,7 @@ import random
 
 
 class Genome:
-    def __init__(self, inputs: int, outputs: int) -> None:
+    def __init__(self, inputs: int, outputs: int, crossover: bool = False) -> None:
         self.nodes: list[NodeGene] = []
         self.connections: list[ConnectionGene] = []
         # each genome consists of at least 1 input and 1 output layer (can have more hidden ones later on)
@@ -15,6 +15,24 @@ class Genome:
         self.outputs: int = outputs
         self.layer_count: int = 2
         self.next_node_id: int = 0
+
+        if crossover:
+            return
+
+        for _ in range(self.inputs):
+            self.nodes.append(NodeGene(self.next_node_id))
+            self.nodes[self.next_node_id].layer = 0
+            self.next_node_id += 1
+
+        for _ in range(self.outputs):
+            self.nodes.append(NodeGene(self.next_node_id))
+            self.nodes[self.next_node_id].layer = 1
+            self.next_node_id += 1
+
+        self.bias_node = NodeGene(self.next_node_id)
+        self.bias_node.layer = 0
+        self.nodes.append(self.bias_node)
+        self.next_node_id += 1
 
     def mutate(self, innovation_history: list[InnovationHistory]) -> None:
         if self.connections == []:
