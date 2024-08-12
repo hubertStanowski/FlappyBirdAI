@@ -8,3 +8,6 @@ class ConnectionGene:
         self.weight: float = weight
         self.innovation_number: int = innovation_number
         self.enable: bool = enable
+
+    def disable(self):
+        self.enable = False

@@ -29,9 +29,9 @@ class Genome:
             self.nodes[self.next_node_id].layer = 1
             self.next_node_id += 1
 
-        self.bias_node = NodeGene(self.next_node_id)
-        self.bias_node.layer = 0
-        self.nodes.append(self.bias_node)
+        self.nodes.append(NodeGene(self.next_node_id))
+        self.nodes[self.next_node_id].layer = 0
+        self.bias_node = self.next_node_id
         self.next_node_id += 1
 
     def mutate(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> None:
@@ -49,12 +49,12 @@ class Genome:
         if self.fully_connected():
             return
 
-        node1 = random.randrange(0, self.nodes.length)
-        node2 = random.randrange(0, self.nodes.length)
+        node1 = random.randrange(0, len(self.nodes))
+        node2 = random.randrange(0, len(self.nodes))
 
         while not self.useful_connection(node1, node2):
-            node1 = random.randrange(0, self.nodes.length)
-            node2 = random.randrange(0, self.nodes.length)
+            node1 = random.randrange(0, len(self.nodes))
+            node2 = random.randrange(0, len(self.nodes))
 
         if self.nodes[node1].layer > self.nodes[node2].layer:
             node1, node2 = node2, node1
@@ -120,3 +120,49 @@ class Genome:
                 return self.nodes[i]
 
         return None
+
+    def add_node(self, config: NeatConfig, innovation_history: InnovationHistory) -> None:
+        # if self.connections == []:
+        #     self.add_connection(config, innovation_history)
+        #     return
+
+        current_connection = random.randrange(0, len(self.connections))
+
+        while self.connections[current_connection].input == self.nodes[self.bias_node] and len(self.connections) != 1:
+            current_connection = random.randrange(0, len(self.connections))
+
+        self.connections[current_connection].disable()
+
+        new_node_id = self.next_node_id
+        self.next_node_id += 1
+        self.nodes.append(NodeGene(new_node_id))
+
+        # Connect with the input node of the selected connection
+        current_innovation_number = self.get_innovation_number(
+            config, innovation_history, self.connections[current_connection].input, self.get_node_by_id(new_node_id))
+        self.connections.append(ConnectionGene(
+            self.connections[current_connection].input, self.get_node_by_id(new_node_id), 1, current_innovation_number))
+
+        # Connect with the output node of the selected connection
+        current_innovation_number = self.get_innovation_number(
+            config, innovation_history, self.get_node_by_id(new_node_id), self.connections[current_connection].output)
+        self.connections.append(ConnectionGene(self.get_node_by_id(
+            new_node_id), self.connections[current_connection].output, self.connections[current_connection].weight, current_innovation_number))
+
+        self.get_node_by_id(
+            new_node_id).layer = self.connections[current_connection].input.layer + 1
+
+        # Connect with the bias node
+        current_innovation_number = self.get_innovation_number(
+            config, innovation_history, self.nodes[self.bias_node], self.get_node_by_id(new_node_id))
+        self.connections.append(ConnectionGene(self.nodes[self.bias_node], self.get_node_by_id(
+            new_node_id), 0, current_innovation_number))
+
+        if self.get_node_by_id(new_node_id).layer == self.connections[current_connection].output.layer:
+            for i in range(len(self.nodes) - 1):
+                if self.nodes[i].layer >= self.get_node_by_id(new_node_id).layer:
+                    self.nodes[i].layer += 1
+
+            self.layers += 1
+
+        self.connect_nodes()
