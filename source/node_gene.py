@@ -10,11 +10,11 @@ class NodeGene:
     def is_connected_to(self, other: 'NodeGene') -> bool:
         if other.layer < self.layer:
             for i in range(len(other.output_connections)):
-                if other.output_connections[i].out_node == self:
+                if other.output_connections[i].output == self:
                     return True
         elif other.layer > self.layer:
             for i in range(len(self.output_connections)):
-                if self.output_connections[i].out_node == other:
+                if self.output_connections[i].output == other:
                     return True
 
         return False
