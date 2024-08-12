@@ -17,6 +17,8 @@ class Player:
         self.on_ground = False
         self.flying = False
         self.score = 0
+        # NEAT related
+        self.fitness: int = 0
 
     def draw(self, window) -> None:
         for pipeset in self.pipes:
