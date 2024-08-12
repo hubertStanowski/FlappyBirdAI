@@ -1,5 +1,4 @@
 from node_gene import NodeGene
-from genome import Genome
 
 
 class InnovationHistory:
@@ -10,7 +9,7 @@ class InnovationHistory:
         self.connected_innovation_numbers: list[int] = connected_innovation_numbers.copy(
         )  # idk why autopep8 does this
 
-    def matches(self, genome: Genome, input: NodeGene, output: NodeGene):
+    def matches(self, genome, input: NodeGene, output: NodeGene):
         if len(genome.connections) != len(self.connected_innovation_numbers):
             return False
         if input.id != self.input or output.id != self.output:

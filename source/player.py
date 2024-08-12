@@ -1,6 +1,7 @@
 from constants import *
 from pipe import PipeSet
 from ground import Ground
+from genome import Genome
 
 from collections import deque
 
@@ -19,6 +20,10 @@ class Player:
         self.score = 0
         # NEAT related
         self.fitness: int = 0
+        self.generation = 0
+        self.genome_inputs = 2      # TODO tune later
+        self.genome_outputs = 1
+        self.genome: Genome = Genome(self.genome_inputs, self.genome_outputs)
 
     def draw(self, window) -> None:
         for pipeset in self.pipes:
