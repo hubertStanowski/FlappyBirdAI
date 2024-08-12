@@ -1,6 +1,7 @@
 from node_gene import NodeGene
 from connection_gene import ConnectionGene
-from innovation_history import InnovationHistory, InnovationHistoryNode
+from innovation_history import InnovationHistory
+from neat_config import NeatConfig
 
 import random
 
@@ -10,7 +11,7 @@ class Genome:
         self.nodes: list[NodeGene] = []
         self.connections: list[ConnectionGene] = []
 
-    def mutate(self, innovation_history) -> None:
+    def mutate(self, innovation_history: list[InnovationHistory]) -> None:
         if self.connections == []:
             self.add_connection(innovation_history)
 
@@ -21,7 +22,9 @@ class Genome:
 
         return same_layer or already_exists
 
-    def add_connection(self, innovation_history) -> None:
+    def add_connection(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> None:
+        # if all connected return
+
         node1 = random.randrange(0, self.nodes.length)
         node2 = random.randrange(0, self.nodes.length)
 
@@ -33,20 +36,20 @@ class Genome:
             node1, node2 = node2, node1
 
         connection_innovation_number = self.get_innovation_number(
-            innovation_history, self.nodes[node1], self.nodes[node2])
+            config, innovation_history, self.nodes[node1], self.nodes[node2])
 
         self.connections.append(ConnectionGene(
             self.nodes[node1], self.nodes[node2], random.uniform(-1, 1), connection_innovation_number))
 
         # connect nodes
 
-    def get_innovation_number(self, innovation_history: InnovationHistory, input: NodeGene, output: NodeGene):
+    def get_innovation_number(self, config: NeatConfig, innovation_history: list[InnovationHistory], input: NodeGene, output: NodeGene):
         new = True
-        current_innovation_number = innovation_history.next_innovation_number
-        for i in range(len(innovation_history.data)):
-            if innovation_history.data[i].matches(self, input, output):
+        current_innovation_number = config.get_next_innovation_number()
+        for i in range(len(innovation_history)):
+            if innovation_history[i].matches(self, input, output):
                 new = False
-                current_innovation_number = innovation_history.data[i].innovation_number
+                current_innovation_number = innovation_history[i].innovation_number
                 break
 
         if new:
@@ -55,9 +58,9 @@ class Genome:
                 connected_innovation_numbers.append(
                     self.connections[i].innovation_number)
 
-            innovation_history.data.append(InnovationHistoryNode(
+            innovation_history.append(InnovationHistory(
                 input.id, output.id, current_innovation_number, connected_innovation_numbers))
 
-            innovation_history.next_innovation_number += 1
+            config.update_next_innovation_number()
 
         return current_innovation_number

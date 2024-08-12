@@ -3,12 +3,6 @@ from genome import Genome
 
 
 class InnovationHistory:
-    def __init__(self) -> None:
-        self.data = []
-        self.next_innovation_number = 1
-
-
-class InnovationHistoryNode:
     def __init__(self, input: int, output: int, innovation_number: int, connected_innovation_numbers: list[int]) -> None:
         self.input: NodeGene = input
         self.output: NodeGene = output
