@@ -10,9 +10,9 @@ class Genome:
     def __init__(self, inputs: int, outputs: int, crossover: bool = False) -> None:
         self.nodes: list[NodeGene] = []
         self.connections: list[ConnectionGene] = []
-        # each genome consists of at least 1 input and 1 output layer (can have more hidden ones later on)
         self.inputs: int = inputs
         self.outputs: int = outputs
+        # each genome consists of at least input and output layer (can have more hidden ones later on)
         self.layer_count: int = 2
         self.next_node_id: int = 0
 
@@ -35,8 +35,18 @@ class Genome:
         self.next_node_id += 1
 
     def mutate(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> None:
-        if self.connections == []:
+        if not self.connections:
             self.add_connection(config, innovation_history)
+
+        if random.random() < config.get_weight_mutation_probablility():
+            for i in range(self.connections):
+                self.connections[i].mutate_weight(config)
+
+        if random.random() < config.get_add_connection_mutation_probability():
+            self.add_connection(config, innovation_history)
+
+        if random.random() < config.get_add_node_mutation_probablility():
+            self.add_node(config, innovation_history)
 
     def useful_connection(self, node1: int, node2: int) -> bool:
         same_layer = self.nodes[node1].layer == self.nodes[node2].layer

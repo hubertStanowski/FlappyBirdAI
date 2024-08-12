@@ -1,4 +1,7 @@
 from node_gene import NodeGene
+from neat_config import NeatConfig
+
+import random
 
 
 class ConnectionGene:
@@ -9,5 +12,14 @@ class ConnectionGene:
         self.innovation_number: int = innovation_number
         self.enable: bool = enable
 
-    def disable(self):
+    def disable(self) -> None:
         self.enable = False
+
+    def mutate_weight(self, config: NeatConfig) -> None:
+        if random.random() < config.get_big_weight_mutation_probablility():
+            self.weight = random.uniform(-1, 1)
+        else:
+            self.weight += (random.gauss() / 50)
+
+            self.weight = min(self.weight, 1)
+            self.weight = max(self.weight, -1)
