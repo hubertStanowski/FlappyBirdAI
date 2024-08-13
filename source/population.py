@@ -60,7 +60,6 @@ class Population:
         self.generation += 1
         for player in self.players:
             player.genome.generate_network()
-            pass
 
     def speciate(self) -> None:
         for s in self.species:
@@ -136,6 +135,3 @@ class Population:
             species.remove_low_performers()
             species.share_fitness()
             species.update_average_fitness()
-
-    # def remap(value, start1, stop1, start2, stop2):
-    #     return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2

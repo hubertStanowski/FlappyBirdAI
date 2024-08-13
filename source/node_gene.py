@@ -1,6 +1,8 @@
 
 import math
 
+# TODO ? specify layer when initializing ?
+
 
 class NodeGene:
     def __init__(self, id: int) -> None:
