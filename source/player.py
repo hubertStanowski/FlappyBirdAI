@@ -108,3 +108,7 @@ class Player:
         # child.genome.generate_network() # TODO after implementing NN
 
         return child
+
+    # TODO tune later
+    def update_fitness(self) -> None:
+        self.fitness = 1 + self.score**2 + self.lifespan / 5
