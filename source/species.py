@@ -9,8 +9,7 @@ import random
 class Species:
     def __init__(self, representative: Player) -> None:
         self.players: list[Player] = [representative]
-        # TODO clone instead of direct pointer fo self.representative
-        self.representative: Player = representative
+        self.representative: Player = representative.clone()
         self.max_fitness: float = self.representative.fitness
         self.average_fitness: float = self.max_fitness
         # if max_fitness of the species doesn't improve in 15 generations (number given by creators of NEAT) -> don't allow reproduction
@@ -40,8 +39,7 @@ class Species:
         if self.players[0].fitness > self.max_fitness:
             self.staleness = 0
             self.max_fitness = self.players[0].fitness
-            # TODO clone instead of direct pointer for self.representative
-            self.representative = self.players[0]
+            self.representative = self.players[0].clone()
         else:
             self.staleness += 1
 
