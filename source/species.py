@@ -10,9 +10,10 @@ class Species:
     def __init__(self, representative: Player) -> None:
         self.players: list[Player] = [representative]
         self.representative: Player = representative.clone()
-        self.max_fitness: float = self.representative.fitness
-        self.average_fitness: float = self.max_fitness
-        # if max_fitness of the species doesn't improve in 15 generations (number given by creators of NEAT) -> don't allow reproduction
+        self.best_fitness: float = self.representative.fitness
+        self.best_player: Player = representative.clone()
+        self.average_fitness: float = self.best_fitness
+        # if best_fitness of the species doesn't improve in 15 generations (number given by creators of NEAT) -> don't allow reproduction
         self.staleness: int = 0
 
         # compatibility coefficients: c1, c2, c3 and compatibility threshold (experimental values from article by creators of NEAT for not large population)
@@ -36,10 +37,11 @@ class Species:
         # Sort self.players in descending order by fitness
         self.players.sort(key=lambda player: player.fitness, reverse=True)
 
-        if self.players[0].fitness > self.max_fitness:
+        if self.players[0].fitness > self.best_fitness:
             self.staleness = 0
-            self.max_fitness = self.players[0].fitness
+            self.best_fitness = self.players[0].fitness
             self.representative = self.players[0].clone()
+            self.best_player = self.players[0].clone()
         else:
             self.staleness += 1
 

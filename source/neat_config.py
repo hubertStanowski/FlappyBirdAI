@@ -7,6 +7,7 @@ class NeatConfig:
         self.big_weight_mutation_probablility = 0.1
         self.crossover_connection_disable_probablility = 0.75
         self.no_crossover_probability = 0.25
+        self.staleness_limit = 15
 
     def get_next_innovation_number(self) -> int:
         return self.get_next_innovation_number
@@ -31,3 +32,6 @@ class NeatConfig:
 
     def get_no_crossover_probability(self) -> float:
         return self.no_crossover_probability
+
+    def get_staleness_limit(self) -> int:
+        return self.staleness_limit

@@ -22,11 +22,59 @@ class Population:
                                            self.innovation_history)
             # self.players[-1].genome.generate_network()    # TODO probably sooonsih
 
-    def natural_selection(self) -> None:
+    def finished(self) -> bool:
+        return True
+
+    def update_survivors(self) -> None:
         pass
 
+    def natural_selection(self) -> None:
+        prev_best = self.players[0]
+        self.speciate()
+        self.update_fitness()
+        self.sort()
+        self.remove_low_performers_from_species()
+        self.update_best_player()
+        self.kill_low_performing_species()
+        self.kill_stale_species()
+
+        average_fitness_sum = self.get_avg_fitness_sum()
+        children = []
+        for s in self.species:
+            children.append(s.best_player.clone())
+            children_count = (s.average_fitness /
+                              average_fitness_sum * len(self.players)) - 1
+
+            for i in range(children_count):
+                children.append(s.reproduce(
+                    self.config, self.innovation_history))
+
+        if len(children) < len(self.players):
+            children.append(prev_best.clone())
+
+        while len(children) < len(self.players):
+            children.append(self.species[0].reproduce(
+                self.config, self.innovation_history))
+
+        self.players = children.copy()
+        self.generation += 1
+        for player in self.players:
+            # player.genome.generate_network() # TODO very very soon
+            pass
+
     def speciate(self) -> None:
-        pass
+        for s in self.species:
+            s.players = []
+
+        for player in self.players:
+            assigned = False
+            for s in self.species:
+                if s.is_this_species(player.genome):
+                    s.add(player)
+                    assigned = True
+                    break
+            if not assigned:
+                self.species.append(Species(player))
 
     def sort(self):
         for s in self.species:
@@ -35,10 +83,25 @@ class Population:
         self.species.sort(key=lambda s: s.best_fitness, reverse=True)
 
     def kill_low_performing_species(self) -> None:
-        pass
+        average_fitness_sum = self.get_avg_fitness_sum()
+        kill_list = []
+
+        for i in range(len(self.species)):
+            if (self.species[i].average_fitness / average_fitness_sum * len(self.players)) < 1:
+                kill_list.append(i)
+
+        for i in kill_list:
+            self.species.pop(i)
 
     def kill_stale_species(self) -> None:
-        pass
+        kill_list = []
+        # starting at idx 2 so that we have at least two species (better 2 stale ones than just having 1 or 0)
+        for i in range(2, len(self.species)):
+            if self.species[i].staleness >= self.config.get_staleness_limit():
+                kill_list.append(i)
+
+        for i in kill_list:
+            self.species.pop(i)
 
     def update_fitness(self) -> None:
         for player in self.players:
@@ -56,11 +119,23 @@ class Population:
         # if every player is dead just return the one with the highest fitness
         return self.players[0]
 
+    def update_best_player(self) -> None:
+        current_best = self.species[0].players[0]
+        current_best.generation = self.generation
+
+        if current_best.score >= self.best_score:
+            self.best_score = current_best.score
+            self.best_player = current_best.clone()
+            self.gen_players.append(current_best.clone())
+
     def get_avg_fitness_sum(self) -> float:
         return sum(species.average_fitness for species in self.species)
 
-    def remove_low_performers(self) -> None:
+    def remove_low_performers_from_species(self) -> None:
         for species in self.species:
             species.remove_low_performers()
             species.share_fitness()
             species.update_average_fitness()
+
+    # def map(value, start1, stop1, start2, stop2):
+    #     return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2
