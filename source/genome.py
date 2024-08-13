@@ -176,3 +176,54 @@ class Genome:
             self.layers += 1
 
         self.connect_nodes()
+
+    def get_matching_connection(self, parent: 'Genome', innovation_number: int) -> int:
+        for i in range(len(parent.connections)):
+            if parent.connections[i].innovation_number == innovation_number:
+                return i
+
+        return -1
+
+    def crossover(self, config: NeatConfig, parent: 'Genome'):
+        child = Genome(self.inputs, self.outputs, crossover=True)
+        child.layer_count = self.layer_count
+        child.next_node_id = self.next_node_id
+        child.bias_node = self.bias_node
+
+        # First add here and then to child.connections to avoid duplicating complicated code
+        new_child_connections: list[ConnectionGene] = []
+
+        for node in self.nodes:
+            child.nodes.append(node.clone())
+
+        for i in range(self.connections):
+            parent_connection = self.get_matching_connection(
+                parent, self.connections[i].innovation_number)
+            child_enable = True
+
+            if parent_connection != -1:
+                if not self.connections[i].enable or not parent.connections[parent_connection].enable:
+                    if random.random < config.get_crossover_connection_disable_probablility():
+                        child_enable = False
+
+                if random.random() < 0.5:
+                    new_child_connections.append(
+                        (self.connections[i], child_enable))
+                else:
+                    new_child_connections.append(
+                        (parent.connections[parent_connection], child_enable))
+
+            else:
+                new_child_connections.append(
+                    (self.connections[i], self.connections[i].enable))
+
+        for new_connection, new_enable in new_child_connections:
+            child_input = child.get_node_by_id(new_connection.input.id)
+            child_output = child.get_node_by_id(new_connection.output.id)
+            child.connections.append(
+                new_connection.clone(child_input, child_output))
+            child.connections[-1].enable = new_enable
+
+        child.connect_nodes()
+
+        return child

@@ -7,10 +7,10 @@ from collections import deque
 
 
 class Player:
-    def __init__(self, x, y) -> None:
+    def __init__(self) -> None:
         self.img = PLAYER_IMG
         self.hitbox = self.img.get_rect()
-        self.hitbox.center = (x, y)
+        self.hitbox.center = (PLAYER_X, PLAYER_Y)
         self.vel = 0
         self.pipes = deque([PipeSet(), PipeSet(x_offset=PIPE_SEPERATION)])
         self.ground = Ground()
@@ -20,6 +20,7 @@ class Player:
         self.score = 0
         # NEAT related
         self.fitness: int = 0
+        self.best_score = 0
         self.generation = 0
         self.genome_inputs = 2      # TODO tune later
         self.genome_outputs = 1
@@ -89,3 +90,21 @@ class Player:
         score_rect = score_label.get_rect(center=(WINDOW_WIDTH // 2, 30))
 
         window.blit(score_label, score_rect)
+
+# NEAT
+    def clone(self) -> 'Player':
+        clone = Player()
+        clone.genome = self.genome.clone()
+        clone.fitness = self.fitness
+        clone.generation = self.generation
+        clone.best_score = self.score
+        # clone.genome.generate_network() # TODO after implementing NN
+
+        return clone
+
+    def crossover(self, other_parent: 'Player') -> 'Player':
+        child = Player()
+        child.genome = self.genome.crossover(other_parent.genome)
+        # child.genome.generate_network() # TODO after implementing NN
+
+        return child

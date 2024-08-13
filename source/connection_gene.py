@@ -23,3 +23,6 @@ class ConnectionGene:
 
             self.weight = min(self.weight, 1)
             self.weight = max(self.weight, -1)
+
+    def clone(self, input, output):
+        return ConnectionGene(input, output, self.weight, self.innovation_number, enable=self.enable)

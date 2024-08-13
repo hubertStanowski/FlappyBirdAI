@@ -16,3 +16,9 @@ class NodeGene:
                     return True
 
         return False
+
+    def clone(self) -> 'NodeGene':
+        clone = NodeGene(self.id)
+        clone.layer = self.layer
+
+        return clone
