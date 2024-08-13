@@ -20,7 +20,7 @@ class Population:
             self.players.append(Player())
             self.players[-1].genome.mutate(self.config,
                                            self.innovation_history)
-            # self.players[-1].genome.generate_network()    # TODO probably sooonsih
+            self.players[-1].genome.generate_network()
 
     def finished(self) -> bool:
         return True
@@ -59,7 +59,7 @@ class Population:
         self.players = children.copy()
         self.generation += 1
         for player in self.players:
-            # player.genome.generate_network() # TODO very very soon
+            player.genome.generate_network()
             pass
 
     def speciate(self) -> None:
@@ -137,5 +137,5 @@ class Population:
             species.share_fitness()
             species.update_average_fitness()
 
-    # def map(value, start1, stop1, start2, stop2):
+    # def remap(value, start1, stop1, start2, stop2):
     #     return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2

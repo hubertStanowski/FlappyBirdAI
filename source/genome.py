@@ -15,6 +15,7 @@ class Genome:
         # each genome consists of at least input and output layer (can have more hidden ones later on)
         self.layer_count: int = 2
         self.next_node_id: int = 0
+        self.network: list[NodeGene] = []
 
         if crossover:
             return
@@ -227,3 +228,30 @@ class Genome:
         child.connect_nodes()
 
         return child
+
+    def generate_network(self) -> None:
+        self.connect_nodes()
+        self.network = []
+        for current_layer in self.layer_count:
+            for node in self.nodes:
+                if node.layer == current_layer:
+                    self.network.append(node)
+
+    def feed_forward(self, input_values: list[float]) -> list[float]:
+        for i in range(self.inputs):
+            self.nodes[i].output_value = input_values[i]
+        self.nodes[self.bias_node].output_value = 1
+
+        for node in self.network:
+            node.engage()
+
+        outputs = []
+
+        for i in range(self.outputs):
+            # output nodes are initialized after inputs so we start indexing after self.inputs
+            outputs[i] = self.nodes[self.inputs+i].output_value
+
+        for node in self.nodes:
+            node.input_sum = 0
+
+        return outputs

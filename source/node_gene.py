@@ -1,9 +1,14 @@
 
+import math
+
+
 class NodeGene:
     def __init__(self, id: int) -> None:
         self.id: int = id
         self.layer: int = 0
         self.output_connections = []
+        self.input_sum: float = 0
+        self.output_value: float = 0
 
     def is_connected_to(self, other: 'NodeGene') -> bool:
         if other.layer < self.layer:
@@ -16,6 +21,18 @@ class NodeGene:
                     return True
 
         return False
+
+    def sigmoid(self, x) -> float:
+        # Modified formula from creators of NEAT
+        return 1.0 / (1.0 + math.exp(-4.9 * x))
+
+    def engage(self) -> None:
+        if self.layer != 0:
+            self.output_value = self.sigmoid(self.input_sum)
+
+        for current_connection in self.output_connections:
+            if current_connection.enable:
+                current_connection.output.input_sum += current_connection.weight * self.output_value
 
     def clone(self) -> 'NodeGene':
         clone = NodeGene(self.id)

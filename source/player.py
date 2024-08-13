@@ -22,7 +22,7 @@ class Player:
         self.fitness: int = 0
         self.best_score = 0
         self.generation = 0
-        self.genome_inputs = 2      # TODO tune later
+        self.genome_inputs = 4      # TODO tune later
         self.genome_outputs = 1
         self.genome: Genome = Genome(self.genome_inputs, self.genome_outputs)
 
@@ -98,14 +98,14 @@ class Player:
         clone.fitness = self.fitness
         clone.generation = self.generation
         clone.best_score = self.score
-        # clone.genome.generate_network() # TODO after implementing NN
+        clone.genome.generate_network()
 
         return clone
 
     def crossover(self, other_parent: 'Player') -> 'Player':
         child = Player()
         child.genome = self.genome.crossover(other_parent.genome)
-        # child.genome.generate_network() # TODO after implementing NN
+        child.genome.generate_network()
 
         return child
 
