@@ -41,7 +41,7 @@ def main():
             else:
                 population.natural_selection()
                 print(population.generation)
-
+            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
 
