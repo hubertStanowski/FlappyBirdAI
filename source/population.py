@@ -3,6 +3,8 @@ from innovation_history import InnovationHistory
 from player import Player
 from species import Species
 
+import math
+
 
 class Population:
     def __init__(self, size: int) -> None:
@@ -23,10 +25,27 @@ class Population:
             self.players[-1].genome.generate_network()
 
     def finished(self) -> bool:
+        for player in self.players:
+            if player.alive:
+                return False
         return True
 
-    def update_survivors(self) -> None:
-        pass
+    def update_survivors(self, window, draw_best: bool) -> None:
+        count = 0
+        first_drawn = False
+        for player in self.players:
+            if player.alive:
+                count += 1
+                player.look()
+                player.decide()
+                player.update()
+            if not draw_best or not first_drawn:
+                player.draw(window)
+                first_drawn = True
+            if player.score > self.gen_best_score:
+                self.gen_best_score = player.score
+
+        # print(count)
 
     def natural_selection(self) -> None:
         prev_best = self.players[0]
@@ -42,8 +61,8 @@ class Population:
         children = []
         for s in self.species:
             children.append(s.best_player.clone())
-            children_count = (s.average_fitness /
-                              average_fitness_sum * len(self.players)) - 1
+            children_count = math.floor((s.average_fitness /
+                                         average_fitness_sum * len(self.players)) - 1)
 
             for i in range(children_count):
                 children.append(s.reproduce(
@@ -60,6 +79,8 @@ class Population:
         self.generation += 1
         for player in self.players:
             player.genome.generate_network()
+
+        print(len(self.players))
 
     def speciate(self) -> None:
         for s in self.species:
