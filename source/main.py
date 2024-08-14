@@ -1,5 +1,6 @@
 from constants import *
 from player import Player
+from ground import Ground
 from population import Population
 
 import pygame
@@ -13,8 +14,10 @@ def main():
     pygame.display.set_caption("Flappy Bird AI")
 
     clock = pygame.time.Clock()
+    ground = Ground()
     player = Player()
-    population = Population(size=100)
+    player.flying = False
+    population = Population(size=10)
 
     human_playing = False
 
@@ -22,11 +25,13 @@ def main():
         clock.tick(60)
 
         window.blit(BACKGROUND_IMG, (0, 0))
+        if player.alive:
+            ground.update()
+        ground.draw(window)
 
         if human_playing:
             player.draw(window)
-
-            player.update()
+            player.update(ground)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -37,7 +42,7 @@ def main():
                         player.flap()
         else:
             if not population.finished():
-                population.update_survivors(window, draw_best=True)
+                population.update_survivors(window, ground)
             else:
                 population.natural_selection()
                 print(population.generation)

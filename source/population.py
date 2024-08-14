@@ -2,6 +2,7 @@ from neat_config import NeatConfig
 from innovation_history import InnovationHistory
 from player import Player
 from species import Species
+from ground import Ground
 
 import math
 
@@ -30,18 +31,18 @@ class Population:
                 return False
         return True
 
-    def update_survivors(self, window, draw_best: bool) -> None:
+    def update_survivors(self, window, ground: Ground) -> None:
         count = 0
         first_drawn = False
         for player in self.players:
             if player.alive:
                 count += 1
-                player.look()
+                player.look(ground)
                 player.decide()
-                player.update()
+                player.update(ground)
                 if count < 50:
                     player.draw(window)
-            if not draw_best or not first_drawn:
+            if not first_drawn:
                 player.draw(window)
                 first_drawn = True
             if player.score > self.gen_best_score:
