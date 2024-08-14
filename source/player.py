@@ -28,7 +28,6 @@ class Player:
         self.vision = []
 
     def draw(self, window) -> None:
-        self.display_score(window)
 
         if not self.flying and self.alive:
             current_img = self.img
@@ -70,14 +69,9 @@ class Player:
 
         return self.alive
 
-    def display_score(self, window):
-        font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
-        score_label = font.render(str(self.score), True, WHITE)
-        score_rect = score_label.get_rect(center=(WINDOW_WIDTH // 2, 30))
-
-        window.blit(score_label, score_rect)
 
 # NEAT
+
     def clone(self) -> 'Player':
         clone = Player()
         clone.genome = self.genome.clone()

@@ -54,11 +54,12 @@ def main():
             else:
                 population.natural_selection()
                 pipes = DoublePipeSet()
-                print(population.generation)
+            score = max([player.score for player in population.players])
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
             display_generation(window, population)
+            display_score(window, score)
 
         pygame.display.update()
 
@@ -68,6 +69,14 @@ def display_generation(window, population: Population):
     font = pygame.font.SysFont(FONT, GENERATION_FONT_SIZE)
     label = font.render(f"Gen: {current_generation}", True, BLACK)
     label_rect = label.get_rect(center=(60, 30))
+    window.blit(label, label_rect)
+
+
+def display_score(window, score):
+    font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
+    label = font.render(str(score), True, BLACK)
+    label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, 30))
+
     window.blit(label, label_rect)
 
 
