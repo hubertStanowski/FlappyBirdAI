@@ -1,8 +1,10 @@
 # FlappyBirdAI
 
-*IN PROGRESS*
+Pure python implementation of NEAT algorithm for FlappyBird game. (graphics in pygame).
 
-Implementing NEAT algorithm in pure python for classic flappy bird game (graphics in pygame).
+Will link video of a sample run tmr.
+
+*Due to random nature of this algorithm it is possible there are bugs that I haven't encountered, in case of problems just restart the app*
 
 # Resources
 ## NEAT
