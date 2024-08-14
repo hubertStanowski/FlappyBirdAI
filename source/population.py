@@ -37,6 +37,7 @@ class Population:
         for player in self.players:
             if player.alive:
                 # count += 1
+                player.score = self.gen_best_score
                 player.look(ground, pipes)
                 player.decide()
                 player.update(ground, pipes)
@@ -146,6 +147,8 @@ class Population:
             self.best_score = current_best.score
             self.best_player = current_best.clone()
             self.gen_players.append(current_best.clone())
+
+        self.gen_best_score = 0
 
     def get_avg_fitness_sum(self) -> float:
         return sum(species.average_fitness for species in self.species)

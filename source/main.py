@@ -19,7 +19,7 @@ def main():
     pipes = DoublePipeSet()
     h_player = Player()
     h_player.flying = False
-    population = Population(size=100)
+    population = Population(size=10)
 
     human_playing = False
 
@@ -39,8 +39,6 @@ def main():
         if human_playing:
             h_player.draw(window)
             h_player.update(ground, pipes)
-            if h_player.hitbox.y < 0:
-                print(h_player.hitbox.y)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -54,7 +52,7 @@ def main():
             else:
                 population.natural_selection()
                 pipes = DoublePipeSet()
-            score = max([player.score for player in population.players])
+            score = population.gen_best_score
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
