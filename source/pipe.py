@@ -1,6 +1,7 @@
 from constants import *
 
 import random
+from collections import deque
 
 
 class Pipe:
@@ -56,3 +57,24 @@ class PipeSet:
             return True
 
         return False
+
+
+class DoublePipeSet:
+    def __init__(self) -> None:
+        self.pipesets: deque[PipeSet] = deque(
+            [PipeSet(), PipeSet(x_offset=PIPE_SEPERATION)])
+
+    def draw(self, window) -> None:
+        for pipeset in self.pipesets:
+            pipeset.draw(window)
+
+    def update(self) -> None:
+        change = False
+        for pipeset in self.pipesets:
+            pipeset.update()
+            if pipeset.is_offscreen():
+                change = True
+
+        if change:
+            self.pipesets.popleft()
+            self.pipesets.append(PipeSet())

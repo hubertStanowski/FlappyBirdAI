@@ -1,5 +1,5 @@
 from constants import *
-from pipe import PipeSet
+from pipe import DoublePipeSet
 from ground import Ground
 from genome import Genome
 from neat_config import NeatConfig
@@ -13,8 +13,7 @@ class Player:
         self.hitbox = self.img.get_rect()
         self.hitbox.center = (PLAYER_X, PLAYER_Y)
         self.vel = 0
-        self.pipes: deque[PipeSet] = deque(
-            [PipeSet(), PipeSet(x_offset=PIPE_SEPERATION)])
+        self.pipes: DoublePipeSet = DoublePipeSet()
         self.ground = Ground()
         self.alive = True
         self.on_ground = False
@@ -31,8 +30,7 @@ class Player:
         self.vision = []
 
     def draw(self, window) -> None:
-        for pipeset in self.pipes:
-            pipeset.draw(window)
+        self.pipes.draw(window)
 
         self.ground.draw(window)
 
@@ -57,18 +55,11 @@ class Player:
         self.hitbox.y += self.vel
 
         self.check_collisions()
-
-        change = False
-        for pipeset in self.pipes:
-            pipeset.update()
+        for pipeset in self.pipes.pipesets:
             if pipeset.check_passed(self):
                 self.score += 1
-            if pipeset.is_offscreen():
-                change = True
 
-        if change:
-            self.pipes.popleft()
-            self.pipes.append(PipeSet())
+        self.pipes.update()
 
         self.ground.update()
 
@@ -78,7 +69,7 @@ class Player:
             self.vel = -FLAP_SPEED
 
     def check_collisions(self):
-        for pipeset in self.pipes:
+        for pipeset in self.pipes.pipesets:
             if pipeset.collides(self):
                 self.alive = False
 
@@ -126,7 +117,7 @@ class Player:
 
     def look(self) -> None:
         self.vision = []
-        closest_pipeset = self.pipes[0] if not self.pipes[0].passed else self.pipes[1]
+        closest_pipeset = self.pipes.pipesets[0] if not self.pipes.pipesets[0].passed else self.pipes.pipesets[1]
         height_cap = WINDOW_HEIGHT-self.ground.hitbox.height - self.hitbox.height
 
         self.vision.append(self.remap(
