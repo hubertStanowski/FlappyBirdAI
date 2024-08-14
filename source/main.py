@@ -60,6 +60,9 @@ def main():
                 population.natural_selection()
                 pipes = DoublePipeSet()
             # print(([player.score for player in population.players if player.alive]))
+            if population.generation >= 5 and population.best_score == 0:
+                population = Population(len(population.players))
+                pipes = DoublePipeSet()
             score = population.gen_best_score
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
