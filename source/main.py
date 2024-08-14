@@ -58,8 +58,17 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
+            display_generation(window, population)
 
         pygame.display.update()
+
+
+def display_generation(window, population: Population):
+    current_generation = population.generation
+    font = pygame.font.SysFont(FONT, GENERATION_FONT_SIZE)
+    label = font.render(f"Gen: {current_generation}", True, BLACK)
+    label_rect = label.get_rect(center=(60, 30))
+    window.blit(label, label_rect)
 
 
 if __name__ == "__main__":
