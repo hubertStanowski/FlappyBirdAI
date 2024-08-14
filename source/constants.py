@@ -27,7 +27,7 @@ PIPE_IMG = pygame.image.load("images/pipe.png")
 # Pipes
 TOP = 1
 BOTTOM = 0
-PIPE_GAP = 150
+PIPE_GAP = 100  # for human player increase it if having trouble
 PIPE_SEPERATION = 280
 
 

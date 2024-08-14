@@ -19,7 +19,7 @@ def main():
     pipes = DoublePipeSet()
     h_player = Player()
     h_player.flying = False
-    population = Population(size=20)
+    population = Population(size=100)
 
     human_playing = False
 

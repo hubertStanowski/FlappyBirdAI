@@ -97,7 +97,7 @@ class Player:
 
     # TODO tune later
     def update_fitness(self) -> None:
-        self.fitness = 1 + self.score**2 + self.lifespan / 100
+        self.fitness = 1 + self.score**2 + self.lifespan / 50
         # print(self.fitness)
 
     def remap(self, value, start1, stop1, start2, stop2):
