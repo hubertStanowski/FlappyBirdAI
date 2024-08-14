@@ -19,7 +19,7 @@ def main():
     pipes = DoublePipeSet()
     h_player = Player()
     h_player.flying = False
-    population = Population(size=100)
+    population = Population(size=20)
 
     human_playing = False
 
@@ -27,9 +27,11 @@ def main():
         clock.tick(60)
 
         window.blit(BACKGROUND_IMG, (0, 0))
+
         if h_player.flying or not human_playing:
             pipes.update()
         pipes.draw(window)
+
         if h_player.alive:
             ground.update()
         ground.draw(window)
@@ -45,16 +47,14 @@ def main():
                     return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        h_player.flying = True
                         h_player.flap()
         else:
             if not population.finished():
                 population.update_survivors(window, ground, pipes)
-                print(min([player.hitbox.y for player in population.players]))
             else:
                 population.natural_selection()
                 pipes = DoublePipeSet()
-                # print(population.generation)
+                print(population.generation)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return

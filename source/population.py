@@ -36,11 +36,13 @@ class Population:
         count = 0
         for player in self.players:
             if player.alive:
-                count += 1
+                # count += 1
                 player.look(ground, pipes)
                 player.decide()
                 player.update(ground, pipes)
                 player.draw(window)
+                if player.score == 0:
+                    count += 1
             if player.score > self.gen_best_score:
                 self.gen_best_score = player.score
 
