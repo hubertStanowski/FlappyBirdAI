@@ -2,6 +2,7 @@ from constants import *
 from pipe import PipeSet
 from ground import Ground
 from genome import Genome
+from neat_config import NeatConfig
 
 from collections import deque
 
@@ -17,10 +18,11 @@ class Player:
         self.ground = Ground()
         self.alive = True
         self.on_ground = False
-        self.flying = False
+        self.flying = True
         self.score = 0
         # NEAT related
         self.fitness: int = 0
+        self.lifespan = 0
         self.best_score = 0
         self.generation = 0
         self.genome_inputs = 4      # TODO tune later
@@ -50,6 +52,7 @@ class Player:
         if self.on_ground or not self.flying:
             return
 
+        self.lifespan += 1
         self.vel = min(self.vel + GRAVITY, FLAP_SPEED*2)
         self.hitbox.y += self.vel
 
@@ -60,7 +63,6 @@ class Player:
             pipeset.update()
             if pipeset.check_passed(self):
                 self.score += 1
-                print(self.score)
             if pipeset.is_offscreen():
                 change = True
 
@@ -104,9 +106,9 @@ class Player:
 
         return clone
 
-    def crossover(self, other_parent: 'Player') -> 'Player':
+    def crossover(self, config: NeatConfig, other_parent: 'Player') -> 'Player':
         child = Player()
-        child.genome = self.genome.crossover(other_parent.genome)
+        child.genome = self.genome.crossover(config, other_parent.genome)
         child.genome.generate_network()
 
         return child
@@ -114,6 +116,7 @@ class Player:
     # TODO tune later
     def update_fitness(self) -> None:
         self.fitness = 1 + self.score**2 + self.lifespan / 5
+        # print(self.fitness)
 
     def remap(self, value, start1, stop1, start2, stop2):
         """
@@ -129,17 +132,20 @@ class Player:
         self.vision.append(self.remap(
             self.vel, -FLAP_SPEED, 2*FLAP_SPEED, -1, 1))
         self.vision.append(self.remap(
-            closest_pipeset.top.hitbox.x - self.hitbox.x, 0, WINDOW_WIDTH-self.x, 1, 0))
+            closest_pipeset.top.hitbox.x - self.hitbox.x, 0, WINDOW_WIDTH-self.hitbox.x, 1, 0))
         self.vision.append(self.remap(
             max(0, closest_pipeset.bottom.hitbox.top - self.hitbox.y), 0, height_cap, 0, 1))
         self.vision.append(self.remap(
             max(0, self.hitbox.y - closest_pipeset.top.hitbox.bottom), 0, height_cap, 0, 1))
 
+        print(self.vision)
+
     def decide(self) -> None:
         """
         ! Only use after look() !
         """
-        decision = self.genome.feed_forward(self.vision)
+        decision = self.genome.feed_forward(self.vision)[0]
+        # print(decision)
 
         if decision > 0.6:
             self.flap()

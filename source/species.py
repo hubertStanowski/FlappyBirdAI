@@ -9,8 +9,8 @@ import random
 class Species:
     def __init__(self, representative: Player) -> None:
         self.players: list[Player] = [representative]
-        self.representative: Player = representative.clone()
-        self.best_fitness: float = self.representative.fitness
+        self.representative: Player = representative.genome.clone()
+        self.best_fitness: float = 0
         self.best_player: Player = representative.clone()
         self.average_fitness: float = self.best_fitness
         # if best_fitness of the species doesn't improve in 15 generations (number given by creators of NEAT) -> don't allow reproduction
@@ -40,7 +40,7 @@ class Species:
         if self.players[0].fitness > self.best_fitness:
             self.staleness = 0
             self.best_fitness = self.players[0].fitness
-            self.representative = self.players[0].clone()
+            self.representative = self.players[0].genome.clone()
             self.best_player = self.players[0].clone()
         else:
             self.staleness += 1
@@ -123,9 +123,9 @@ class Species:
             parent2 = self.select_player()
 
             if parent1.fitness > parent2.fitness:
-                child = parent1.crossover(parent2)
+                child = parent1.crossover(config, parent2)
             else:
-                child = parent2.crossover(parent1)
+                child = parent2.crossover(config, parent1)
 
         child.genome.mutate(config, innovation_history)
 

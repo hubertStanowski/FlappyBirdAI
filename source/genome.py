@@ -4,6 +4,7 @@ from innovation_history import InnovationHistory
 from neat_config import NeatConfig
 
 import random
+from collections import defaultdict
 
 
 class Genome:
@@ -40,7 +41,7 @@ class Genome:
             self.add_connection(config, innovation_history)
 
         if random.random() < config.get_weight_mutation_probablility():
-            for i in range(self.connections):
+            for i in range(len(self.connections)):
                 self.connections[i].mutate_weight(config)
 
         if random.random() < config.get_add_connection_mutation_probability():
@@ -58,6 +59,7 @@ class Genome:
 
     def add_connection(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> None:
         if self.fully_connected():
+            print("CONNECTED")
             return
 
         node1 = random.randrange(0, len(self.nodes))
@@ -102,7 +104,7 @@ class Genome:
 
     def fully_connected(self) -> bool:
         possible_connections = 0
-        nodes_per_layer = [0 for _ in range(self.layer_count)]
+        nodes_per_layer = defaultdict(int)
 
         for i in range(len(self.nodes)):
             nodes_per_layer[self.nodes[i].layer] += 1
@@ -113,7 +115,7 @@ class Genome:
             for j in range(i+1, self.layer_count):
                 nodes_in_front += nodes_per_layer[j]
 
-            possible_connections *= nodes_per_layer[i] * nodes_in_front
+            possible_connections += nodes_per_layer[i] * nodes_in_front
 
         return possible_connections <= len(self.connections)
 
@@ -133,9 +135,9 @@ class Genome:
         return None
 
     def add_node(self, config: NeatConfig, innovation_history: InnovationHistory) -> None:
-        # if self.connections == []:
-        #     self.add_connection(config, innovation_history)
-        #     return
+        if self.connections == []:
+            self.add_connection(config, innovation_history)
+            return
 
         current_connection = random.randrange(0, len(self.connections))
 
@@ -197,14 +199,14 @@ class Genome:
         for node in self.nodes:
             child.nodes.append(node.clone())
 
-        for i in range(self.connections):
+        for i in range(len(self.connections)):
             parent_connection = self.get_matching_connection(
                 parent, self.connections[i].innovation_number)
             child_enable = True
 
             if parent_connection != -1:
                 if not self.connections[i].enable or not parent.connections[parent_connection].enable:
-                    if random.random < config.get_crossover_connection_disable_probablility():
+                    if random.random() < config.get_crossover_connection_disable_probablility():
                         child_enable = False
 
                 if random.random() < 0.5:
@@ -232,7 +234,7 @@ class Genome:
     def generate_network(self) -> None:
         self.connect_nodes()
         self.network = []
-        for current_layer in self.layer_count:
+        for current_layer in range(self.layer_count):
             for node in self.nodes:
                 if node.layer == current_layer:
                     self.network.append(node)
@@ -249,9 +251,25 @@ class Genome:
 
         for i in range(self.outputs):
             # output nodes are initialized after inputs so we start indexing after self.inputs
-            outputs[i] = self.nodes[self.inputs+i].output_value
+            outputs.append(self.nodes[self.inputs+i].output_value)
 
         for node in self.nodes:
             node.input_sum = 0
 
         return outputs
+
+    def clone(self) -> 'Genome':
+        clone = Genome(self.inputs, self.outputs, crossover=True)
+        for node in self.nodes:
+            clone.nodes.append(node.clone())
+
+        for connection in self.connections:
+            clone.connections.append(connection.clone(clone.get_node_by_id(
+                connection.input.id), clone.get_node_by_id(connection.output.id)))
+
+        clone.layer_count = self.layer_count
+        clone.next_node_id = self.next_node_id
+        clone.bias_node = self.bias_node
+        clone.connect_nodes()
+
+        return clone
