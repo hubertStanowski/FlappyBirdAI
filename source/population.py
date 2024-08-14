@@ -39,6 +39,8 @@ class Population:
                 player.look()
                 player.decide()
                 player.update()
+                # if count < 50:
+                #     first_drawn = False
             if not draw_best or not first_drawn:
                 player.draw(window)
                 first_drawn = True
@@ -80,7 +82,7 @@ class Population:
         for player in self.players:
             player.genome.generate_network()
 
-        print(len(self.players))
+        # print(len(self.players))
 
     def speciate(self) -> None:
         for s in self.species:

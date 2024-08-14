@@ -50,12 +50,13 @@ class Genome:
         if random.random() < config.get_add_node_mutation_probablility():
             self.add_node(config, innovation_history)
 
-    def useful_connection(self, node1: int, node2: int) -> bool:
-        same_layer = self.nodes[node1].layer == self.nodes[node2].layer
-        already_exists = self.nodes[node1].is_connected_to(
-            self.nodes[node2])
+    def not_useful_connection(self, node1: int, node2: int) -> bool:
+        if self.nodes[node1].layer == self.nodes[node2].layer:
+            return True
+        if self.nodes[node1].is_connected_to(self.nodes[node2]):
+            return True
 
-        return same_layer or already_exists
+        return False
 
     def add_connection(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> None:
         if self.fully_connected():
@@ -65,7 +66,7 @@ class Genome:
         node1 = random.randrange(0, len(self.nodes))
         node2 = random.randrange(0, len(self.nodes))
 
-        while not self.useful_connection(node1, node2):
+        while self.not_useful_connection(node1, node2):
             node1 = random.randrange(0, len(self.nodes))
             node2 = random.randrange(0, len(self.nodes))
 
@@ -135,7 +136,7 @@ class Genome:
         return None
 
     def add_node(self, config: NeatConfig, innovation_history: InnovationHistory) -> None:
-        if self.connections == []:
+        if len(self.connections) == 0:
             self.add_connection(config, innovation_history)
             return
 
@@ -176,7 +177,7 @@ class Genome:
                 if self.nodes[i].layer >= self.get_node_by_id(new_node_id).layer:
                     self.nodes[i].layer += 1
 
-            self.layers += 1
+            self.layer_count += 1
 
         self.connect_nodes()
 
@@ -246,6 +247,7 @@ class Genome:
 
         for node in self.network:
             node.engage()
+            # print(node.output_value)
 
         outputs = []
 

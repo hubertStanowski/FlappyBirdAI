@@ -40,7 +40,10 @@ def main():
                 population.update_survivors(window, draw_best=True)
             else:
                 population.natural_selection()
+                print(population.generation)
+            print(population.gen_best_score)
 
+            # print(population.best_score)
             # print(len(population.species))
 
             # print(len(population.innovation_history))

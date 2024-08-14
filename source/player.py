@@ -138,7 +138,7 @@ class Player:
         self.vision.append(self.remap(
             max(0, self.hitbox.y - closest_pipeset.top.hitbox.bottom), 0, height_cap, 0, 1))
 
-        print(self.vision)
+        # print(self.vision)
 
     def decide(self) -> None:
         """
