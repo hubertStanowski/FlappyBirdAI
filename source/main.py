@@ -14,7 +14,7 @@ def main():
 
     clock = pygame.time.Clock()
     player = Player()
-    population = Population(size=10)
+    population = Population(size=5)
 
     human_playing = False
 
