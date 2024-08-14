@@ -14,7 +14,7 @@ def main():
 
     clock = pygame.time.Clock()
     player = Player()
-    population = Population(size=1000)
+    population = Population(size=10)
 
     human_playing = False
 
@@ -41,13 +41,7 @@ def main():
             else:
                 population.natural_selection()
                 print(population.generation)
-            print(population.gen_best_score)
 
-            # print(population.best_score)
-            # print(len(population.species))
-
-            # print(len(population.innovation_history))
-            for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
 

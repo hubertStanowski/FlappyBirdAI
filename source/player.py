@@ -25,7 +25,7 @@ class Player:
         self.lifespan = 0
         self.best_score = 0
         self.generation = 0
-        self.genome_inputs = 4      # TODO tune later
+        self.genome_inputs = 4
         self.genome_outputs = 1
         self.genome: Genome = Genome(self.genome_inputs, self.genome_outputs)
         self.vision = []
