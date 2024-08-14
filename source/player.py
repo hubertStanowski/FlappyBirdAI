@@ -30,7 +30,7 @@ class Player:
     def draw(self, window) -> None:
         self.display_score(window)
 
-        if not self.flying:
+        if not self.flying and self.alive:
             current_img = self.img
         elif self.vel < 10:
             current_img = pygame.transform.rotate(self.img, 30)
@@ -66,6 +66,7 @@ class Player:
         self.on_ground = ground.collides(self)
         if self.on_ground:
             self.alive = False
+            self.flying = False
 
         return self.alive
 
@@ -96,7 +97,7 @@ class Player:
 
     # TODO tune later
     def update_fitness(self) -> None:
-        self.fitness = 1 + self.score**2 + self.lifespan / 10
+        self.fitness = 1 + self.score**2 + self.lifespan / 100
         # print(self.fitness)
 
     def remap(self, value, start1, stop1, start2, stop2):
