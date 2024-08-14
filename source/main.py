@@ -1,5 +1,6 @@
 from constants import *
 from player import Player
+from population import Population
 
 import pygame
 
@@ -13,22 +14,41 @@ def main():
 
     clock = pygame.time.Clock()
     player = Player()
+    population = Population(size=1000)
+
+    human_playing = False
 
     while True:
         clock.tick(60)
 
         window.blit(BACKGROUND_IMG, (0, 0))
-        player.draw(window)
+
+        if human_playing:
+            player.draw(window)
+
+            player.update()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_SPACE:
+                        player.flying = True
+                        player.flap()
+        else:
+            if not population.finished():
+                population.update_survivors(window, draw_best=True)
+            else:
+                population.natural_selection()
+
+            # print(len(population.species))
+
+            # print(len(population.innovation_history))
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    return
+
         pygame.display.update()
-
-        player.update()
-
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return
-            if event.type == pygame.KEYDOWN:
-                if event.key == pygame.K_SPACE:
-                    player.flap()
 
 
 if __name__ == "__main__":
