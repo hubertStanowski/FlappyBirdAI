@@ -1,6 +1,7 @@
 from constants import *
 from player import Player
 from ground import Ground
+from pipe import DoublePipeSet
 from population import Population
 
 import pygame
@@ -15,9 +16,10 @@ def main():
 
     clock = pygame.time.Clock()
     ground = Ground()
-    player = Player()
-    player.flying = False
-    population = Population(size=10)
+    pipes = DoublePipeSet()
+    h_player = Player()
+    h_player.flying = False
+    population = Population(size=100)
 
     human_playing = False
 
@@ -25,26 +27,29 @@ def main():
         clock.tick(60)
 
         window.blit(BACKGROUND_IMG, (0, 0))
-        if player.alive:
+        pipes.update()
+        pipes.draw(window)
+        if h_player.alive:
             ground.update()
         ground.draw(window)
 
         if human_playing:
-            player.draw(window)
-            player.update(ground)
+            h_player.draw(window)
+            h_player.update(ground)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        player.flying = True
-                        player.flap()
+                        h_player.flying = True
+                        h_player.flap()
         else:
             if not population.finished():
-                population.update_survivors(window, ground)
+                population.update_survivors(window, ground, pipes)
             else:
                 population.natural_selection()
+                pipes = DoublePipeSet()
                 print(population.generation)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:

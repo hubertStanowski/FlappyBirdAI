@@ -13,7 +13,6 @@ class Player:
         self.hitbox = self.img.get_rect()
         self.hitbox.center = (PLAYER_X, PLAYER_Y)
         self.vel = 0
-        self.pipes: DoublePipeSet = DoublePipeSet()
         self.alive = True
         self.on_ground = False
         self.flying = True
@@ -29,8 +28,6 @@ class Player:
         self.vision = []
 
     def draw(self, window) -> None:
-        self.pipes.draw(window)
-
         self.display_score(window)
 
         if not self.flying:
@@ -43,7 +40,7 @@ class Player:
 
         window.blit(current_img, self.hitbox)
 
-    def update(self, ground: Ground):
+    def update(self, ground: Ground, pipes: DoublePipeSet):
         if self.on_ground or not self.flying:
             return
 
@@ -51,20 +48,18 @@ class Player:
         self.vel = min(self.vel + GRAVITY, FLAP_SPEED*2)
         self.hitbox.y += self.vel
 
-        self.check_collisions(ground)
-        for pipeset in self.pipes.pipesets:
+        self.check_collisions(ground, pipes)
+        for pipeset in pipes.pipesets:
             if pipeset.check_passed(self):
                 self.score += 1
-
-        self.pipes.update()
 
     def flap(self):
         if self.alive:
             self.flying = True
             self.vel = -FLAP_SPEED
 
-    def check_collisions(self, ground: Ground):
-        for pipeset in self.pipes.pipesets:
+    def check_collisions(self, ground: Ground, pipes: DoublePipeSet):
+        for pipeset in pipes.pipesets:
             if pipeset.collides(self):
                 self.alive = False
 
@@ -110,9 +105,9 @@ class Player:
         """
         return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2
 
-    def look(self, ground: Ground) -> None:
+    def look(self, ground: Ground, pipes: DoublePipeSet) -> None:
         self.vision = []
-        closest_pipeset = self.pipes.pipesets[0] if not self.pipes.pipesets[0].passed else self.pipes.pipesets[1]
+        closest_pipeset = pipes.pipesets[0] if not pipes.pipesets[0].passed else pipes.pipesets[1]
         height_cap = WINDOW_HEIGHT-ground.hitbox.height - self.hitbox.height
 
         self.vision.append(self.remap(

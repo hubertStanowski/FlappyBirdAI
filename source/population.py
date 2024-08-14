@@ -3,6 +3,7 @@ from innovation_history import InnovationHistory
 from player import Player
 from species import Species
 from ground import Ground
+from pipe import DoublePipeSet
 
 import math
 
@@ -31,20 +32,15 @@ class Population:
                 return False
         return True
 
-    def update_survivors(self, window, ground: Ground) -> None:
+    def update_survivors(self, window, ground: Ground, pipes: DoublePipeSet) -> None:
         count = 0
-        first_drawn = False
         for player in self.players:
             if player.alive:
                 count += 1
-                player.look(ground)
+                player.look(ground, pipes)
                 player.decide()
-                player.update(ground)
-                if count < 50:
-                    player.draw(window)
-            if not first_drawn:
+                player.update(ground, pipes)
                 player.draw(window)
-                first_drawn = True
             if player.score > self.gen_best_score:
                 self.gen_best_score = player.score
 
