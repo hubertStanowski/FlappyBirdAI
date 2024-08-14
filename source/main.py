@@ -19,9 +19,16 @@ def main():
     pipes = DoublePipeSet()
     h_player = Player()
     h_player.flying = False
-    population = Population(size=10)
+    population = Population(size=40)
 
     human_playing = False
+
+    # temp = True
+    # while temp:
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.KEYDOWN:
+    #             if event.key == pygame.K_SPACE:
+    #                 temp = False
 
     while True:
         clock.tick(60)
@@ -52,6 +59,7 @@ def main():
             else:
                 population.natural_selection()
                 pipes = DoublePipeSet()
+            # print(([player.score for player in population.players if player.alive]))
             score = population.gen_best_score
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
