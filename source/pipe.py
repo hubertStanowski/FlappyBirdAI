@@ -18,7 +18,7 @@ class Pipe:
     def draw(self, window) -> None:
         window.blit(self.img, self.hitbox)
 
-    def update(self):
+    def update(self) -> None:
         self.hitbox.x -= SCROLL_SPEED
 
 
@@ -31,18 +31,19 @@ class PipeSet:
                         WINDOW_HEIGHT // 2 + pipe_height, TOP)
         self.passed = False
 
-    def draw(self, window):
+    def draw(self, window) -> None:
         self.bottom.draw(window)
         self.top.draw(window)
 
-    def update(self):
+    def update(self) -> None:
         self.bottom.update()
         self.top.update()
 
-    def is_offscreen(self):
+    def is_offscreen(self) -> bool:
         return self.bottom.hitbox.right < 0
 
-    def collides(self, player):
+    def collides(self, player) -> bool:
+        # Different from player.hitbox as player is rotated when flying
         collision_hitbox = player.hitbox.copy()
         collision_hitbox.y += 10
         collision_hitbox.x += 5
@@ -55,7 +56,7 @@ class PipeSet:
 
         return on_screen or off_screen
 
-    def check_passed(self, player_hitbox_x):
+    def check_passed(self, player_hitbox_x) -> bool:
         if self.top.hitbox.right < player_hitbox_x and not self.passed:
             self.passed = True
             return True

@@ -42,7 +42,7 @@ class Player:
 
         window.blit(current_img, self.hitbox)
 
-    def update(self, ground: Ground, pipes: DoublePipeSet):
+    def update(self, ground: Ground, pipes: DoublePipeSet) -> None:
         if self.on_ground or not self.flying:
             return
 
@@ -54,16 +54,12 @@ class Player:
             self.lifespan += 1
             self.score = pipes.score
 
-        # for pipeset in pipes.pipesets:
-        #     if pipeset.check_passed(self):
-        #         self.score += 1
-
-    def flap(self):
+    def flap(self) -> None:
         if self.alive:
             self.flying = True
             self.vel = -FLAP_SPEED
 
-    def check_collisions(self, ground: Ground, pipes: DoublePipeSet):
+    def check_collisions(self, ground: Ground, pipes: DoublePipeSet) -> bool:
         for pipeset in pipes.pipesets:
             if pipeset.collides(self):
                 self.alive = False
@@ -77,7 +73,6 @@ class Player:
 
 
 # NEAT
-
 
     def clone(self) -> 'Player':
         clone = Player()
@@ -100,7 +95,7 @@ class Player:
     def update_fitness(self) -> None:
         self.fitness = 1 + self.score**2 + self.lifespan / 10
 
-    def remap(self, value, start1, stop1, start2, stop2):
+    def remap(self, value, start1, stop1, start2, stop2) -> float:
         """
             Remaps a value in range(start1, stop1) proportionately to range(start2, stop2) and returns it
         """

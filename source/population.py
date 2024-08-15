@@ -95,7 +95,7 @@ class Population:
             if not assigned:
                 self.species.append(Species(player))
 
-    def sort(self):
+    def sort(self) -> None:
         for s in self.species:
             s.sort()
 

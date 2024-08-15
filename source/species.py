@@ -117,7 +117,7 @@ class Species:
 
         return len(genome1.connections) + len(genome2.connections) - 2 * match_count
 
-    def reproduce(self, config: NeatConfig, innovation_history: list[InnovationHistory]):
+    def reproduce(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> Player:
         if random.random() < config.get_no_crossover_probability():
             child = self.select_player().clone()
         else:
