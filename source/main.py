@@ -22,6 +22,7 @@ def main():
     population = Population(size=40)
 
     human_playing = False
+    fps = 60
 
     # temp = True
     # while temp:
@@ -31,7 +32,7 @@ def main():
     #                 temp = False
 
     while True:
-        clock.tick(60)
+        clock.tick(fps)
 
         window.blit(BACKGROUND_IMG, (0, 0))
 
@@ -83,7 +84,7 @@ def display_generation(window, population: Population):
     current_generation = population.generation
     font = pygame.font.SysFont(FONT, GENERATION_FONT_SIZE)
     label = font.render(f"Gen: {current_generation}", True, BLACK)
-    label_rect = label.get_rect(center=(60, 30))
+    label_rect = label.get_rect(topleft=(10, 10))
     window.blit(label, label_rect)
 
 
@@ -96,9 +97,9 @@ def display_score(window, score):
 
 
 def display_reset(window):
-    font = pygame.font.SysFont(FONT, GENERATION_FONT_SIZE)
+    font = pygame.font.SysFont(FONT, RESET_FONT_SIZE)
     label = font.render("RESET", True, RED)
-    label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
+    label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 5))
     window.blit(label, label_rect)
     pygame.display.update()
     pygame.time.delay(1000)
