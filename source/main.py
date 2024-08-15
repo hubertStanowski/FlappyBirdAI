@@ -24,9 +24,10 @@ def main():
         With small population it is possible that NEAT will have to be redone ("RESET" message), but with big population
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
-    population = Population(size=30)
+    population = Population(size=50)
 
     human_playing = False
+    # Set fps 60-240 for best experience
     fps = 60
 
     # temp = True

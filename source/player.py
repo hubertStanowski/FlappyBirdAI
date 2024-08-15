@@ -4,7 +4,7 @@ from ground import Ground
 from genome import Genome
 from neat_config import NeatConfig
 
-# TODO maybe sensor view (2 red lines from player hitbox center to nearest pipest top and bottom, same as for vision[2 & 3]
+# TODO add sensor view (2 red lines from player hitbox center to nearest pipest top and bottom, same as for vision[2 & 3]
 
 
 class Player:
