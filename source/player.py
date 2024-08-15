@@ -35,6 +35,11 @@ class Player:
             angle = max(30 - (self.vel - 10) * 12, -90)
             current_img = pygame.transform.rotate(self.img, angle)
 
+        # collision_hitbox = self.hitbox.copy()
+        # collision_hitbox.y += 10
+        # collision_hitbox.x += 5
+        # pygame.draw.rect(window, (255, 0, 0), collision_hitbox, 1)
+
         window.blit(current_img, self.hitbox)
 
     def update(self, ground: Ground, pipes: DoublePipeSet):
@@ -72,6 +77,7 @@ class Player:
 
 
 # NEAT
+
 
     def clone(self) -> 'Player':
         clone = Player()

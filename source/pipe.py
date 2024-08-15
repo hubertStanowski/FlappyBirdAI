@@ -43,8 +43,12 @@ class PipeSet:
         return self.bottom.hitbox.right < 0
 
     def collides(self, player):
+        collision_hitbox = player.hitbox.copy()
+        collision_hitbox.y += 10
+        collision_hitbox.x += 5
+
         on_screen = self.bottom.hitbox.colliderect(
-            player.hitbox) or self.top.hitbox.colliderect(player.hitbox)
+            collision_hitbox) or self.top.hitbox.colliderect(collision_hitbox)
 
         off_screen = (self.top.hitbox.x ==
                       player.hitbox.x) and player.hitbox.y < 0
