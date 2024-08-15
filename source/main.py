@@ -24,7 +24,7 @@ def main():
         With small population it is possible that NEAT will have to be redone ("RESET" message), but with big population
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
-    population = Population(size=50)
+    population = Population(size=30)
 
     human_playing = False
     fps = 60
@@ -69,10 +69,7 @@ def main():
                 pipes = DoublePipeSet()
             # print(([player.score for player in population.players if player.alive]))
 
-            if population.generation >= 5 and population.best_score == 0:
-                # TODO cap no population improvement instaed of just score == 0
-                # TODO keep track of prevoius gen score and if this gen after death doesn't have a better score increase population staleness -  reset after 5 times this occurs
-                # TODO add toggle show_dying for population
+            if population.staleness >= 5:
                 population = Population(len(population.players))
                 pipes = DoublePipeSet()
                 display_reset(window)

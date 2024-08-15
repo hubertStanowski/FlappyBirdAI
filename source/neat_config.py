@@ -9,6 +9,11 @@ class NeatConfig:
         self.no_crossover_probability = 0.25
         self.staleness_limit = 5
 
+        # View settings
+        self.sensor_view = False
+        self.show_dying = False
+        self.show_network = False
+
     def get_next_innovation_number(self) -> int:
         return self.get_next_innovation_number
 

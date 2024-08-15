@@ -17,8 +17,10 @@ class Population:
         self.best_score: int = 0
         self.gen_players: list[Player] = []
         self.gen_best_score: int = 0
+        self.prev_gen_best_score: int = 0
         self.generation: int = 1
         self.species: list[Species] = []
+        self.staleness = 0
 
         for i in range(size):
             self.players.append(Player())
@@ -28,7 +30,7 @@ class Population:
 
     def finished(self) -> bool:
         for player in self.players:
-            if player.alive:
+            if player.alive or (player.flying and self.config.show_dying):
                 return False
         return True
 
@@ -38,7 +40,7 @@ class Population:
                 player.look(ground, pipes)
                 player.decide()
 
-            if player.flying:
+            if (player.flying and self.config.show_dying) or player.alive:
                 player.draw(window)
                 player.update(ground, pipes)
 
@@ -46,6 +48,12 @@ class Population:
                 self.gen_best_score = player.score
 
     def natural_selection(self) -> None:
+        if self.prev_gen_best_score <= self.gen_best_score:
+            self.staleness += 1
+        else:
+            self.staleness = 0
+        self.prev_gen_best_score = self.gen_best_score
+
         prev_best = self.players[0]
         self.speciate()
         self.update_fitness()
