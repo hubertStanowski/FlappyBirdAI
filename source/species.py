@@ -26,6 +26,8 @@ class Species:
         self.players.append(new)
 
     def update_average_fitness(self) -> None:
+        if len(self.players) == 0:
+            return
         self.average_fitness = sum(
             [player.fitness for player in self.players]) / len(self.players)
 
