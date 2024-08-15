@@ -86,3 +86,6 @@ class DoublePipeSet:
         if change:
             self.pipesets.popleft()
             self.pipesets.append(PipeSet())
+
+    def get_closest_pipeset(self) -> PipeSet:
+        return self.pipesets[0] if not self.pipesets[0].passed else self.pipesets[1]

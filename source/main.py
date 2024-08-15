@@ -19,7 +19,7 @@ def main():
     pipes = DoublePipeSet()
     h_player = Player()
     h_player.flying = False
-    population = Population(size=40)
+    population = Population(size=50)
     # With small population it is likely that NEAT will have to be redone ("RESET" message), but with big population
     # it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     # for evolution ~size=40 when fps=60

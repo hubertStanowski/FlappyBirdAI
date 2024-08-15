@@ -18,8 +18,7 @@ class Player:
         # NEAT related
         self.fitness: int = 0
         self.lifespan = 0
-        self.best_score = 0
-        self.generation = 0
+        self.generation = 1
         self.genome_inputs = 4
         self.genome_outputs = 1
         self.genome: Genome = Genome(self.genome_inputs, self.genome_outputs)
@@ -35,6 +34,7 @@ class Player:
             angle = max(30 - (self.vel - 10) * 12, -90)
             current_img = pygame.transform.rotate(self.img, angle)
 
+        # for debugging hitbox - remove for final version
         # collision_hitbox = self.hitbox.copy()
         # collision_hitbox.y += 10
         # collision_hitbox.x += 5
@@ -79,7 +79,6 @@ class Player:
         clone.genome = self.genome.clone()
         clone.fitness = self.fitness
         clone.generation = self.generation
-        clone.best_score = self.score
         clone.genome.generate_network()
 
         return clone
@@ -91,7 +90,6 @@ class Player:
 
         return child
 
-    # TODO tune later
     def update_fitness(self) -> None:
         self.fitness = 1 + self.score**2 + self.lifespan / 10
 
@@ -103,7 +101,7 @@ class Player:
 
     def look(self, ground: Ground, pipes: DoublePipeSet) -> None:
         self.vision = []
-        closest_pipeset = pipes.pipesets[0] if not pipes.pipesets[0].passed else pipes.pipesets[1]
+        closest_pipeset = pipes.get_closest_pipeset()
         height_cap = WINDOW_HEIGHT-ground.hitbox.height - self.hitbox.height
 
         self.vision.append(self.remap(

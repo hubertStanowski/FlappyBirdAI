@@ -17,7 +17,7 @@ class Species:
         self.staleness: int = 0
 
         # compatibility coefficients: c1, c2, c3 and compatibility threshold (experimental values from article by creators of NEAT for not large population)
-        # TODO tune these later and possibly move to NeatConfig
+        # TODO move to NeatConfig later
         self.excess_disjoint_coefficient: float = 1        # c1 = c2
         self.weight_difference_coefficient: float = 0.4    # c3
         self.compatibility_threshold: float = 3
