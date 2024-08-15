@@ -35,4 +35,5 @@ PIPE_SEPERATION = 280
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
+RED = (255, 0, 0)
 SKY_COLOR = (102, 178, 255)

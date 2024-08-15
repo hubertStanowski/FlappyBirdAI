@@ -53,6 +53,8 @@ def main():
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         h_player.flap()
+
+            score = h_player.score
         else:
             if not population.finished():
                 population.update_survivors(window, ground, pipes)
@@ -60,9 +62,13 @@ def main():
                 population.natural_selection()
                 pipes = DoublePipeSet()
             # print(([player.score for player in population.players if player.alive]))
+
             if population.generation >= 5 and population.best_score == 0:
+                # TODO cap no population improvement instaed of just score == 0
                 population = Population(len(population.players))
                 pipes = DoublePipeSet()
+                display_reset(window)
+
             score = population.gen_best_score
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -86,6 +92,13 @@ def display_score(window, score):
     label = font.render(str(score), True, BLACK)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, 30))
 
+    window.blit(label, label_rect)
+
+
+def display_reset(window):
+    font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
+    label = font.render("RESET", True, RED)
+    label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
     window.blit(label, label_rect)
 
 
