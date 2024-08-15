@@ -4,6 +4,8 @@ from ground import Ground
 from genome import Genome
 from neat_config import NeatConfig
 
+# TODO maybe sensor view (2 red lines from player hitbox center to nearest pipest top and bottom, same as for vision[2 & 3]
+
 
 class Player:
     def __init__(self) -> None:
@@ -107,11 +109,11 @@ class Player:
         self.vision.append(self.remap(
             self.vel, -FLAP_SPEED, 2*FLAP_SPEED, -1, 1))
         self.vision.append(self.remap(
-            closest_pipeset.top.hitbox.x - self.hitbox.x, 0, WINDOW_WIDTH-self.hitbox.x, 1, 0))
+            closest_pipeset.top.hitbox.x - self.hitbox.x, 0, WINDOW_WIDTH-self.hitbox.x, 0, 1))
         self.vision.append(self.remap(
-            max(0, closest_pipeset.bottom.hitbox.top - self.hitbox.y), 0, height_cap, 0, 1))
+            closest_pipeset.bottom.hitbox.top - self.hitbox.y, 0, height_cap, 0, 1))
         self.vision.append(self.remap(
-            max(0, self.hitbox.y - closest_pipeset.top.hitbox.bottom), 0, height_cap, 0, 1))
+            self.hitbox.y - closest_pipeset.top.hitbox.bottom, 0, height_cap, 0, 1))
 
         # print(self.vision)
 
