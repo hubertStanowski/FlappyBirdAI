@@ -48,11 +48,12 @@ class Population:
                 self.gen_best_score = player.score
 
     def natural_selection(self) -> None:
-        if self.prev_gen_best_score <= self.gen_best_score:
+        if self.prev_gen_best_score >= self.gen_best_score:
             self.staleness += 1
         else:
             self.staleness = 0
         self.prev_gen_best_score = self.gen_best_score
+        # print(self.staleness)
 
         prev_best = self.players[0]
         self.speciate()
