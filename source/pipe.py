@@ -51,8 +51,8 @@ class PipeSet:
 
         return on_screen or off_screen
 
-    def check_passed(self, player):
-        if self.top.hitbox.right < player.hitbox.x and not self.passed:
+    def check_passed(self, player_hitbox_x):
+        if self.top.hitbox.right < player_hitbox_x and not self.passed:
             self.passed = True
             return True
 
@@ -63,17 +63,20 @@ class DoublePipeSet:
     def __init__(self) -> None:
         self.pipesets: deque[PipeSet] = deque(
             [PipeSet(), PipeSet(x_offset=PIPE_SEPERATION)])
+        self.score = 0
 
     def draw(self, window) -> None:
         for pipeset in self.pipesets:
             pipeset.draw(window)
 
-    def update(self) -> None:
+    def update(self, player_hitbox_x) -> None:
         change = False
         for pipeset in self.pipesets:
             pipeset.update()
             if pipeset.is_offscreen():
                 change = True
+            if pipeset.check_passed(player_hitbox_x):
+                self.score += 1
 
         if change:
             self.pipesets.popleft()

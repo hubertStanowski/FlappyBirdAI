@@ -19,7 +19,7 @@ def main():
     pipes = DoublePipeSet()
     h_player = Player()
     h_player.flying = False
-    population = Population(size=50)
+    population = Population(size=40)
 
     human_playing = False
 
@@ -36,7 +36,7 @@ def main():
         window.blit(BACKGROUND_IMG, (0, 0))
 
         if h_player.flying or not human_playing:
-            pipes.update()
+            pipes.update(h_player.hitbox.x)
         pipes.draw(window)
 
         if h_player.alive:
@@ -74,7 +74,7 @@ def main():
                 if event.type == pygame.QUIT:
                     return
             display_generation(window, population)
-            display_score(window, score)
+        display_score(window, score)
 
         pygame.display.update()
 
@@ -96,11 +96,12 @@ def display_score(window, score):
 
 
 def display_reset(window):
-    font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
+    font = pygame.font.SysFont(FONT, GENERATION_FONT_SIZE)
     label = font.render("RESET", True, RED)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
     window.blit(label, label_rect)
-    pygame.time.delay(500)
+    pygame.display.update()
+    pygame.time.delay(1000)
 
 
 if __name__ == "__main__":

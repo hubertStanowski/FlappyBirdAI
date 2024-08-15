@@ -4,8 +4,6 @@ from ground import Ground
 from genome import Genome
 from neat_config import NeatConfig
 
-from collections import deque
-
 
 class Player:
     def __init__(self) -> None:
@@ -42,15 +40,18 @@ class Player:
     def update(self, ground: Ground, pipes: DoublePipeSet):
         if self.on_ground or not self.flying:
             return
-        if self.alive:
-            self.lifespan += 1
+
         self.vel = min(self.vel + GRAVITY, FLAP_SPEED*2)
         self.hitbox.y += self.vel
-
         self.check_collisions(ground, pipes)
-        for pipeset in pipes.pipesets:
-            if pipeset.check_passed(self):
-                self.score += 1
+
+        if self.alive:
+            self.lifespan += 1
+            self.score = pipes.score
+
+        # for pipeset in pipes.pipesets:
+        #     if pipeset.check_passed(self):
+        #         self.score += 1
 
     def flap(self):
         if self.alive:
@@ -91,7 +92,7 @@ class Player:
 
     # TODO tune later
     def update_fitness(self) -> None:
-        self.fitness = 1 + self.score**2 + self.lifespan / 50
+        self.fitness = 1 + self.score**2 + self.lifespan / 10
 
     def remap(self, value, start1, stop1, start2, stop2):
         """
