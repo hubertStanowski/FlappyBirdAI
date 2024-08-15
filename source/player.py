@@ -42,8 +42,8 @@ class Player:
     def update(self, ground: Ground, pipes: DoublePipeSet):
         if self.on_ground or not self.flying:
             return
-
-        self.lifespan += 1
+        if self.alive:
+            self.lifespan += 1
         self.vel = min(self.vel + GRAVITY, FLAP_SPEED*2)
         self.hitbox.y += self.vel
 
@@ -91,8 +91,7 @@ class Player:
 
     # TODO tune later
     def update_fitness(self) -> None:
-        self.fitness = 1 + self.score**2 + self.lifespan / 10
-        # print(self.fitness)
+        self.fitness = 1 + self.score**2 + self.lifespan / 50
 
     def remap(self, value, start1, stop1, start2, stop2):
         """

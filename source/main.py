@@ -19,7 +19,7 @@ def main():
     pipes = DoublePipeSet()
     h_player = Player()
     h_player.flying = False
-    population = Population(size=40)
+    population = Population(size=50)
 
     human_playing = False
 
@@ -100,6 +100,7 @@ def display_reset(window):
     label = font.render("RESET", True, RED)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
     window.blit(label, label_rect)
+    pygame.time.delay(500)
 
 
 if __name__ == "__main__":
