@@ -33,20 +33,17 @@ class Population:
         return True
 
     def update_survivors(self, window, ground: Ground, pipes: DoublePipeSet) -> None:
-        count = 0
         for player in self.players:
             if player.alive:
-                # count += 1
                 player.look(ground, pipes)
                 player.decide()
-                player.update(ground, pipes)
+
+            if player.flying:
                 player.draw(window)
-                if player.score == 0:
-                    count += 1
+                player.update(ground, pipes)
+
             if player.score > self.gen_best_score:
                 self.gen_best_score = player.score
-
-        # print(count)
 
     def natural_selection(self) -> None:
         prev_best = self.players[0]
