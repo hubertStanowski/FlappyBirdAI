@@ -46,7 +46,7 @@ def main():
             pipes.update(h_player.hitbox.x)
         pipes.draw(window)
 
-        if h_player.alive:
+        if h_player.alive or not human_playing:
             ground.update()
         ground.draw(window)
 
@@ -80,16 +80,15 @@ def main():
                 if event.type == pygame.QUIT:
                     return
                 if event.type == pygame.KEYDOWN:
-                    # Plus is on the same key as equals on most keyboards
+                    # Plus is on the same key as equals on most keyboards so checking for equals
                     if event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS:
                         fps = min(240, fps+10)
-                        print(fps)
                     elif event.key == pygame.K_MINUS:
                         fps -= 10
                         if fps < 10:
                             fps = 10
-                        print(fps)
             display_generation(window, population)
+
         display_score(window, score)
         if show_fps:
             display_fps(window, fps)
