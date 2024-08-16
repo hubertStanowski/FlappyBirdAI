@@ -143,5 +143,7 @@ class Species:
         running_sum = 0
         for player in self.players:
             running_sum += player.fitness
-            if running_sum > random_threshold:
+            if running_sum >= random_threshold:
                 return player
+
+        return self.players[-1]
