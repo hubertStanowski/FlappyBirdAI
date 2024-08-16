@@ -158,7 +158,7 @@ def display_alive_count(window, population):
         [player for player in population.players if player.alive])
 
     font = pygame.font.SysFont(FONT, ALIVE_FONT_SIZE)
-    label = font.render(f"Alive: {alive_count}/{population.size}", True, RED)
+    label = font.render(f"Alive: {alive_count} / {population.size}", True, RED)
     label_rect = label.get_rect(topleft=(10, 50))
 
     window.blit(label, label_rect)
