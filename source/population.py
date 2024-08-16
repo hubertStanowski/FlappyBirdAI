@@ -41,6 +41,8 @@ class Population:
         return True
 
     def update_survivors(self, window, ground: Ground, pipes: DoublePipeSet, node_id_renders: list) -> None:
+        # TODO add draw_limit to config
+        drawn_count = 0
         for player in self.players:
             if player.alive:
                 player.look(ground, pipes)

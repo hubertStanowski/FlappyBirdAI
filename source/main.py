@@ -8,6 +8,9 @@ from neat_config import NeatConfig
 import pygame
 
 
+# TODO display show_dying value in sensor view
+# TODO in population limit drawing to 200
+
 def main():
     pygame.init()
 
@@ -27,7 +30,7 @@ def main():
     """
     config = NeatConfig()
     node_id_renders = prerender_node_ids()
-    population = Population(config, size=75)
+    population = Population(config, size=375)
 
     human_playing = False
     show_fps = True
@@ -100,6 +103,11 @@ def main():
                         config.toggle_show_dying()
                     elif event.key == pygame.K_s:
                         config.toggle_sensor_view()
+                        if config.sensor_view:
+                            pygame.display.set_caption(
+                                "Flappy Bird NEAT AI - SENSOR VIEW")
+                        else:
+                            pygame.display.set_caption("Flappy Bird NEAT AI")
                     elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
                         population.staleness = config.population_staleness_limt
 
