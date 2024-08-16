@@ -26,7 +26,7 @@ def main():
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
     config = NeatConfig()
-    population = Population(config, size=150)
+    population = Population(config, size=50)
 
     human_playing = False
     show_fps = True
@@ -97,6 +97,8 @@ def main():
                         config.toggle_show_dying()
                     elif event.key == pygame.K_s:
                         config.toggle_sensor_view()
+                    elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
+                        population.staleness = config.population_staleness_limt
 
             display_generation(window, population)
             if config.sensor_view:
