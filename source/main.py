@@ -27,7 +27,7 @@ def main():
     """
     config = NeatConfig()
     node_id_renders = prerender_node_ids()
-    population = Population(config, size=75)
+    population = Population(config, size=90)
 
     human_playing = False
     show_fps = True

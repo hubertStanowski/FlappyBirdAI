@@ -38,11 +38,11 @@ class Player:
             current_img = pygame.transform.rotate(self.img, angle)
 
         window.blit(current_img, self.hitbox)
-
-        if sensor_view and self.sensor_view_data:
-            for point in self.sensor_view_data:
-                pygame.draw.line(window, RED,
-                                 self.hitbox.center, point, 2)
+        if self.alive:
+            if sensor_view and self.sensor_view_data:
+                for point in self.sensor_view_data:
+                    pygame.draw.line(window, RED,
+                                     self.hitbox.center, point, 2)
 
     def update(self, ground: Ground, pipes: DoublePipeSet) -> None:
         if self.on_ground or not self.flying:
@@ -75,6 +75,7 @@ class Player:
 
 
 # NEAT
+
 
     def clone(self) -> 'Player':
         clone = Player()
