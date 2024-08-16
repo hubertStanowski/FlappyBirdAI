@@ -123,7 +123,7 @@ class Population:
         kill_list = []
         # starting at idx 2 so that we have at least two species (better 2 stale ones than just having 1 or 0)
         for i in range(2, len(self.species)):
-            if self.species[i].staleness >= self.config.get_staleness_limit():
+            if self.species[i].staleness >= self.config.get_species_staleness_limit():
                 kill_list.append(i)
 
         for i in kill_list:

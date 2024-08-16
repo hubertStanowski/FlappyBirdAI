@@ -76,7 +76,7 @@ def main():
                 pipes = DoublePipeSet()
             # print(([player.score for player in population.players if player.alive]))
 
-            if population.staleness >= 5:
+            if population.staleness >= config.get_population_staleness_limt():
                 population = Population(config, population.size)
                 pipes = DoublePipeSet()
                 display_reset(window)

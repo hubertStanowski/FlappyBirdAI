@@ -7,7 +7,8 @@ class NeatConfig:
         self.big_weight_mutation_probablility = 0.1
         self.crossover_connection_disable_probablility = 0.75
         self.no_crossover_probability = 0.25
-        self.staleness_limit = 5
+        self.species_staleness_limit = 5
+        self.population_staleness_limt = 5
 
         # View settings
         self.sensor_view = False
@@ -38,8 +39,11 @@ class NeatConfig:
     def get_no_crossover_probability(self) -> float:
         return self.no_crossover_probability
 
-    def get_staleness_limit(self) -> int:
-        return self.staleness_limit
+    def get_species_staleness_limit(self) -> int:
+        return self.species_staleness_limit
+
+    def get_population_staleness_limt(self) -> int:
+        return self.population_staleness_limt
 
     # View functions
     def toggle_sensor_view(self) -> None:
