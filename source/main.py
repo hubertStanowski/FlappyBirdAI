@@ -26,10 +26,13 @@ def main():
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
     config = NeatConfig()
+    node_id_renders = prerender_node_ids()
     population = Population(config, size=50)
 
     human_playing = False
     show_fps = True
+
+    # With big population or sensor_view enabled actual fps count will be lower
     fps = 60
 
     # temp = True
@@ -70,7 +73,8 @@ def main():
             score = h_player.score
         else:
             if not population.finished():
-                population.update_survivors(window, ground, pipes)
+                population.update_survivors(
+                    window, ground, pipes, node_id_renders)
             else:
                 population.natural_selection()
                 pipes = DoublePipeSet()
@@ -104,7 +108,7 @@ def main():
             if config.sensor_view:
                 display_alive_count(window, population)
             if show_fps or config.sensor_view:
-                display_fps(window, fps)
+                display_fps(window, fps, clock, advanced=config.sensor_view)
 
         display_score(window, score)
 
@@ -138,9 +142,13 @@ def display_reset(window):
     pygame.time.delay(1000)
 
 
-def display_fps(window, fps):
+def display_fps(window,  fps, clock, advanced=False):
     font = pygame.font.SysFont(FONT, FPS_FONT_SIZE)
-    label = font.render(f"FPS: {fps}", True, BLACK)
+    actual = round(clock.get_fps(), 1)
+    if advanced:
+        label = font.render(f"FPS: {actual}", True, RED)
+    else:
+        label = font.render(f"FPS: {fps}", True, BLACK)
     label_rect = label.get_rect(bottomleft=(10, WINDOW_HEIGHT-10))
 
     window.blit(label, label_rect)
@@ -155,6 +163,15 @@ def display_alive_count(window, population):
     label_rect = label.get_rect(topleft=(10, 50))
 
     window.blit(label, label_rect)
+
+
+def prerender_node_ids() -> list:
+    renders = []
+    font = pygame.font.Font(FONT, NODE_ID_FONT_SIZE)
+    for id in range(8):
+        renders.append(font.render(str(id), True, WHITE))
+
+    return renders
 
 
 if __name__ == "__main__":

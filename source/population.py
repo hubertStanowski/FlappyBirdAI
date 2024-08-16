@@ -6,6 +6,7 @@ from ground import Ground
 from pipe import DoublePipeSet
 
 import math
+import pygame
 
 
 class Population:
@@ -19,6 +20,7 @@ class Population:
         self.gen_players: list[Player] = []
         self.gen_best_score: int = 0
         self.prev_gen_best_score: int = 0
+        self.curr_best_player: Player | None = None
         self.generation: int = 1
         self.species: list[Species] = []
         self.staleness = 0
@@ -29,13 +31,15 @@ class Population:
                                            self.innovation_history)
             self.players[-1].genome.generate_network()
 
+        self.curr_best_player = self.players[0]
+
     def finished(self) -> bool:
         for player in self.players:
             if player.alive or (player.flying and self.config.show_dying):
                 return False
         return True
 
-    def update_survivors(self, window, ground: Ground, pipes: DoublePipeSet) -> None:
+    def update_survivors(self, window, ground: Ground, pipes: DoublePipeSet, node_id_renders: list) -> None:
         for player in self.players:
             if player.alive:
                 player.look(ground, pipes)
@@ -47,6 +51,17 @@ class Population:
 
             if player.score > self.gen_best_score:
                 self.gen_best_score = player.score
+                self.curr_best_player = player
+
+            if self.config.sensor_view:
+                self.curr_best_player.draw_network(window, node_id_renders)
+
+            # For debugging delete later
+            # if len(player.genome.nodes) == 7:
+            #     self.curr_best_player = player
+            #     self.curr_best_player.draw_network(window, node_id_renders)
+            #     pygame.display.update()
+            #     pygame.time.delay(100)
 
     def natural_selection(self) -> None:
         if self.prev_gen_best_score >= self.gen_best_score:

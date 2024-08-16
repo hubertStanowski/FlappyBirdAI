@@ -13,7 +13,6 @@ class NeatConfig:
         # View settings
         self.sensor_view = False
         self.show_dying = False
-        self.show_network = False
 
     def get_next_innovation_number(self) -> int:
         return self.get_next_innovation_number
@@ -51,6 +50,3 @@ class NeatConfig:
 
     def toggle_show_dying(self) -> None:
         self.show_dying = not self.show_dying
-
-    def toggle_show_network(self) -> None:
-        self.show_network = not self.show_network

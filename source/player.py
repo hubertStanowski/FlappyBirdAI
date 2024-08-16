@@ -5,6 +5,7 @@ from genome import Genome
 from neat_config import NeatConfig
 
 import pygame
+from collections import defaultdict
 
 
 class Player:
@@ -43,6 +44,21 @@ class Player:
         # collision_hitbox.y += 10
         # collision_hitbox.x += 5
         # pygame.draw.rect(window, (255, 0, 0), collision_hitbox, 1)
+
+        # if len(self.genome.nodes) == 6:
+        #     layers = defaultdict(list)
+        #     for node in self.genome.network:
+        #         layers[node.layer].append(node.id)
+
+        #     print(layers)
+        #     print()
+
+        # if len(self.genome.connections) > 2:
+        #     print(len(self.genome.connections))
+
+        # print(len(self.genome.connections), len(self.genome.nodes))
+        # if self.genome.layer_count > 2:
+        #     print(self.genome.layer_count)
 
         if sensor_view and self.sensor_view_data:
             for point in self.sensor_view_data:
@@ -135,3 +151,44 @@ class Player:
 
         if decision > 0.6:
             self.flap()
+
+# Here and not in genome.py as that file is meant to be reusable and this function is not
+    def draw_network(self, window, node_id_renders) -> None:
+        if not self.genome.network:
+            return
+
+        radius = 12
+        x = WINDOW_WIDTH - radius*1.5
+        y = WINDOW_HEIGHT - radius*1.5
+        layer_count = self.genome.layer_count - 1
+        y_diff = radius * 3
+        x_diff = radius * 5
+
+        layers = defaultdict(list)
+        for node in self.genome.network:
+            layers[node.layer].append(node)
+
+        # for clean connections
+        node_pos = {}
+
+        for layer, nodes in layers.items():
+            # Hardcoding as there have never been >5 nodes in a layer and don't want to overcomplicate it for nodes to look good
+            y_positions = [y - 2*y_diff, y -
+                           y_diff, y - 3*y_diff, y, y-4*y_diff]
+            for i, node in enumerate(nodes):
+                node_pos[node] = (x-(layer_count-layer)*x_diff, y_positions[i])
+
+        for connection in self.genome.connections:
+            input_pos = node_pos[connection.input]
+            output_pos = node_pos[connection.output]
+            pygame.draw.line(window, BLUE, input_pos,
+                             output_pos, max(int(5 * abs(connection.weight)), 1))
+
+        # Seperate loop so that the connection line doesn't overlay the id
+        for node, pos in node_pos.items():
+            text = node_id_renders[node.id]
+            text_rect = text.get_rect(center=node_pos[node])
+
+            pygame.draw.circle(window, BLACK, node_pos[node], radius+2)
+            pygame.draw.circle(window, RED, node_pos[node], radius)
+            window.blit(text, text_rect)
