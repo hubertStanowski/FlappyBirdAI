@@ -42,7 +42,7 @@ class Population:
                 player.decide()
 
             if (player.flying and self.config.show_dying) or player.alive:
-                player.draw(window)
+                player.draw(window, sensor_view=self.config.sensor_view)
                 player.update(ground, pipes)
 
             if player.score > self.gen_best_score:

@@ -4,7 +4,7 @@ from ground import Ground
 from genome import Genome
 from neat_config import NeatConfig
 
-# TODO add sensor view (2 red lines from player hitbox center to nearest pipest top and bottom, same as for vision[2 & 3]
+import pygame
 
 
 class Player:
@@ -25,9 +25,9 @@ class Player:
         self.genome_outputs = 1
         self.genome: Genome = Genome(self.genome_inputs, self.genome_outputs)
         self.vision = []
+        self.sensor_view_data = []
 
-    def draw(self, window) -> None:
-
+    def draw(self, window, sensor_view=False) -> None:
         if not self.flying and self.alive:
             current_img = self.img
         elif self.vel < 10:
@@ -36,13 +36,18 @@ class Player:
             angle = max(30 - (self.vel - 10) * 12, -90)
             current_img = pygame.transform.rotate(self.img, angle)
 
+        window.blit(current_img, self.hitbox)
+
         # for debugging hitbox - remove for final version
         # collision_hitbox = self.hitbox.copy()
         # collision_hitbox.y += 10
         # collision_hitbox.x += 5
         # pygame.draw.rect(window, (255, 0, 0), collision_hitbox, 1)
 
-        window.blit(current_img, self.hitbox)
+        if sensor_view and self.sensor_view_data:
+            for point in self.sensor_view_data:
+                pygame.draw.line(window, RED,
+                                 self.hitbox.center, point, 2)
 
     def update(self, ground: Ground, pipes: DoublePipeSet) -> None:
         if self.on_ground or not self.flying:
@@ -114,6 +119,10 @@ class Player:
             closest_pipeset.bottom.hitbox.top - self.hitbox.y, 0, height_cap, 0, 1))
         self.vision.append(self.remap(
             self.hitbox.y - closest_pipeset.top.hitbox.bottom, 0, height_cap, 0, 1))
+
+        self.sensor_view_data = []
+        self.sensor_view_data.append(closest_pipeset.bottom.hitbox.midtop)
+        self.sensor_view_data.append(closest_pipeset.top.hitbox.midbottom)
 
         # print(self.vision)
 

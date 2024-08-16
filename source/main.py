@@ -28,7 +28,7 @@ def main():
     config = NeatConfig()
     population = Population(config, size=50)
 
-    human_playing = True
+    human_playing = False
     show_fps = True
     fps = 60
 
@@ -50,7 +50,11 @@ def main():
 
         if h_player.alive or not human_playing:
             ground.update()
-        ground.draw(window)
+
+        if human_playing:
+            ground.draw(window)
+        else:
+            ground.draw(window, sensor_view=config.sensor_view)
 
         if human_playing:
             h_player.draw(window)
@@ -91,9 +95,11 @@ def main():
                             fps = 10
                     elif event.key == pygame.K_d:
                         config.toggle_show_dying()
+                    elif event.key == pygame.K_s:
+                        config.toggle_sensor_view()
 
             display_generation(window, population)
-            if show_fps:
+            if show_fps or config.sensor_view:
                 display_fps(window, fps)
 
         display_score(window, score)
