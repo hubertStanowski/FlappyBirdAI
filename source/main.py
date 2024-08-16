@@ -27,7 +27,7 @@ def main():
     population = Population(size=50)
 
     human_playing = False
-    # Set fps 60-240 for best experience
+    show_fps = True
     fps = 60
 
     # temp = True
@@ -79,8 +79,20 @@ def main():
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
+                if event.type == pygame.KEYDOWN:
+                    # Plus is on the same key as equals on most keyboards
+                    if event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS:
+                        fps = min(240, fps+10)
+                        print(fps)
+                    elif event.key == pygame.K_MINUS:
+                        fps -= 10
+                        if fps < 10:
+                            fps = 10
+                        print(fps)
             display_generation(window, population)
         display_score(window, score)
+        if show_fps:
+            display_fps(window, fps)
 
         pygame.display.update()
 
@@ -108,6 +120,13 @@ def display_reset(window):
     window.blit(label, label_rect)
     pygame.display.update()
     pygame.time.delay(1000)
+
+
+def display_fps(window, fps):
+    font = pygame.font.SysFont(FONT, FPS_FONT_SIZE)
+    label = font.render(f"FPS: {fps}", True, BLACK)
+    label_rect = label.get_rect(bottomleft=(10, WINDOW_HEIGHT-10))
+    window.blit(label, label_rect)
 
 
 if __name__ == "__main__":
