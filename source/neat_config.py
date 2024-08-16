@@ -40,3 +40,13 @@ class NeatConfig:
 
     def get_staleness_limit(self) -> int:
         return self.staleness_limit
+
+    # View functions
+    def toggle_sensor_view(self) -> None:
+        self.sensor_view = not self.sensor_view
+
+    def toggle_show_dying(self) -> None:
+        self.show_dying = not self.show_dying
+
+    def toggle_show_network(self) -> None:
+        self.show_network = not self.show_network
