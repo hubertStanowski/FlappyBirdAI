@@ -28,7 +28,7 @@ def main():
     config = NeatConfig()
     population = Population(config, size=50)
 
-    human_playing = False
+    human_playing = True
     show_fps = True
     fps = 60
 
@@ -91,11 +91,12 @@ def main():
                             fps = 10
                     elif event.key == pygame.K_d:
                         config.toggle_show_dying()
+
             display_generation(window, population)
+            if show_fps:
+                display_fps(window, fps)
 
         display_score(window, score)
-        if show_fps:
-            display_fps(window, fps)
 
         pygame.display.update()
 
