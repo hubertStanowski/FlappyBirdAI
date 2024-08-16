@@ -18,7 +18,7 @@ class Player:
         self.on_ground = False
         self.flying = True
         self.score = 0
-        # NEAT related
+        # NEAT
         self.fitness: int = 0
         self.lifespan = 0
         self.generation = 1
@@ -38,27 +38,6 @@ class Player:
             current_img = pygame.transform.rotate(self.img, angle)
 
         window.blit(current_img, self.hitbox)
-
-        # for debugging hitbox - remove for final version
-        # collision_hitbox = self.hitbox.copy()
-        # collision_hitbox.y += 10
-        # collision_hitbox.x += 5
-        # pygame.draw.rect(window, (255, 0, 0), collision_hitbox, 1)
-
-        # if len(self.genome.nodes) == 6:
-        #     layers = defaultdict(list)
-        #     for node in self.genome.network:
-        #         layers[node.layer].append(node.id)
-
-        #     print(layers)
-        #     print()
-
-        # if len(self.genome.connections) > 2:
-        #     print(len(self.genome.connections))
-
-        # print(len(self.genome.connections), len(self.genome.nodes))
-        # if self.genome.layer_count > 2:
-        #     print(self.genome.layer_count)
 
         if sensor_view and self.sensor_view_data:
             for point in self.sensor_view_data:
@@ -137,17 +116,13 @@ class Player:
             self.hitbox.y - closest_pipeset.top.hitbox.bottom, 0, height_cap, 0, 1))
 
         self.sensor_view_data = []
-        self.sensor_view_data.append(closest_pipeset.bottom.hitbox.midtop)
-        self.sensor_view_data.append(closest_pipeset.top.hitbox.midbottom)
-
-        # print(self.vision)
+        self.sensor_view_data.append(closest_pipeset.bottom.hitbox.topleft)
+        self.sensor_view_data.append(closest_pipeset.top.hitbox.bottomleft)
 
     def decide(self) -> None:
-        """
-        ! Only use after look() !
-        """
+        if not self.vision:
+            return
         decision = self.genome.feed_forward(self.vision)[0]
-        # print(decision)
 
         if decision > 0.6:
             self.flap()
@@ -184,7 +159,7 @@ class Player:
             pygame.draw.line(window, BLUE, input_pos,
                              output_pos, max(int(5 * abs(connection.weight)), 1))
 
-        # Seperate loop so that the connection line doesn't overlay the id
+        # Seperate loop and not when assigning positions so that the connection line doesn't overlay the id
         for node, pos in node_pos.items():
             text = node_id_renders[node.id]
             text_rect = text.get_rect(center=node_pos[node])

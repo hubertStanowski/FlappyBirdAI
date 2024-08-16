@@ -7,8 +7,12 @@ class NeatConfig:
         self.big_weight_mutation_probablility = 0.1
         self.crossover_connection_disable_probablility = 0.75
         self.no_crossover_probability = 0.25
-        self.species_staleness_limit = 5
-        self.population_staleness_limt = 5
+        self.species_staleness_limit = 10
+        self.population_staleness_limt = 10
+        # compatibility coefficients: c1, c2, c3 and compatibility threshold (experimental values from article by creators of NEAT for not large population)
+        self.excess_disjoint_coefficient: float = 1        # c1 = c2
+        self.weight_difference_coefficient: float = 0.4    # c3
+        self.compatibility_threshold: float = 3
 
         # View settings
         self.sensor_view = False
@@ -43,6 +47,15 @@ class NeatConfig:
 
     def get_population_staleness_limt(self) -> int:
         return self.population_staleness_limt
+
+    def get_excess_disjoint_coefficient(self) -> float:
+        return self.excess_disjoint_coefficient
+
+    def get_weight_difference_coefficient(self) -> float:
+        return self.weight_difference_coefficient
+
+    def get_compatibility_threshold(self) -> float:
+        return self.compatibility_threshold
 
     # View functions
     def toggle_sensor_view(self) -> None:

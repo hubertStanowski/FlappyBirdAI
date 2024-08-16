@@ -6,7 +6,6 @@ from ground import Ground
 from pipe import DoublePipeSet
 
 import math
-import pygame
 
 
 class Population:
@@ -15,12 +14,12 @@ class Population:
         self.size = size
         self.innovation_history: list[InnovationHistory] = []
         self.players: list[Player] = []
-        self.best_player: Player | None = None
+        self.best_player: Player = None
         self.best_score: int = 0
         self.gen_players: list[Player] = []
         self.gen_best_score: int = 0
         self.prev_gen_best_score: int = 0
-        self.curr_best_player: Player | None = None
+        self.curr_best_player: Player = None
         self.generation: int = 1
         self.species: list[Species] = []
         self.staleness = 0
@@ -31,7 +30,9 @@ class Population:
                                            self.innovation_history)
             self.players[-1].genome.generate_network()
 
-        self.curr_best_player = self.players[0]
+            # not necessary but nicely showcases largest network at the start
+            if not self.curr_best_player or len(self.players[-1].genome.nodes) > len(self.curr_best_player.genome.nodes):
+                self.curr_best_player = self.players[-1]
 
     def finished(self) -> bool:
         for player in self.players:
@@ -56,20 +57,12 @@ class Population:
             if self.config.sensor_view:
                 self.curr_best_player.draw_network(window, node_id_renders)
 
-            # For debugging delete later
-            # if len(player.genome.nodes) == 7:
-            #     self.curr_best_player = player
-            #     self.curr_best_player.draw_network(window, node_id_renders)
-            #     pygame.display.update()
-            #     pygame.time.delay(100)
-
     def natural_selection(self) -> None:
         if self.prev_gen_best_score >= self.gen_best_score:
             self.staleness += 1
         else:
             self.staleness = 0
         self.prev_gen_best_score = self.gen_best_score
-        # print(self.staleness)
 
         prev_best = self.players[0]
         self.speciate()
@@ -110,7 +103,7 @@ class Population:
         for player in self.players:
             assigned = False
             for s in self.species:
-                if s.is_this_species(player.genome):
+                if s.is_this_species(self.config, player.genome):
                     s.add(player)
                     assigned = True
                     break

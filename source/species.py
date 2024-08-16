@@ -13,14 +13,8 @@ class Species:
         self.best_fitness: float = 0
         self.best_player: Player = representative.clone()
         self.average_fitness: float = self.best_fitness
-        # if best_fitness of the species doesn't improve in 15 generations (number given by creators of NEAT) -> don't allow reproduction
+        # if best_fitness of the species doesn't improve in 15 generations (number given by creators of NEAT) or user set cap -> don't allow reproduction
         self.staleness: int = 0
-
-        # compatibility coefficients: c1, c2, c3 and compatibility threshold (experimental values from article by creators of NEAT for not large population)
-        # TODO move to NeatConfig later
-        self.excess_disjoint_coefficient: float = 1        # c1 = c2
-        self.weight_difference_coefficient: float = 0.4    # c3
-        self.compatibility_threshold: float = 3
 
     def add(self, new: Player) -> None:
         self.players.append(new)
@@ -62,7 +56,7 @@ class Species:
         for _ in range(len(self.players) // 2):
             self.players.pop()
 
-    def is_this_species(self, tested_genome: Genome) -> bool:
+    def is_this_species(self, config: NeatConfig, tested_genome: Genome) -> bool:
         """
             Compares a tested_genome to species representative and returns whether it is close enough to it to be considered the same species,
             based on compatibility coefficients and compatibility threshold defined beforehand by the user.
@@ -76,10 +70,10 @@ class Species:
             tested_genome, self.representative)
 
         # Formula for compatibility given in the article by creators of NEAT
-        compatibility = (self.excess_disjoint_coefficient * excess_disjoint_count /
-                         large_genome_normalizer) + (self.weight_difference_coefficient * average_weight_difference)
+        compatibility = (config.get_excess_disjoint_coefficient() * excess_disjoint_count /
+                         large_genome_normalizer) + (config.get_weight_difference_coefficient() * average_weight_difference)
 
-        return compatibility < self.compatibility_threshold
+        return compatibility < config.get_compatibility_threshold()
 
     def get_average_weight_difference(self, genome1: Genome, genome2: Genome) -> float:
         """

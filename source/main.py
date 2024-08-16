@@ -27,7 +27,7 @@ def main():
     """
     config = NeatConfig()
     node_id_renders = prerender_node_ids()
-    population = Population(config, size=50)
+    population = Population(config, size=75)
 
     human_playing = False
     show_fps = True
@@ -78,7 +78,6 @@ def main():
             else:
                 population.natural_selection()
                 pipes = DoublePipeSet()
-            # print(([player.score for player in population.players if player.alive]))
 
             if population.staleness >= config.get_population_staleness_limt():
                 population = Population(config, population.size)
@@ -146,7 +145,7 @@ def display_fps(window,  fps, clock, advanced=False):
     font = pygame.font.SysFont(FONT, FPS_FONT_SIZE)
     actual = round(clock.get_fps(), 1)
     if advanced:
-        label = font.render(f"FPS: {actual}", True, RED)
+        label = font.render(f"FPS: {actual} ({fps})", True, RED)
     else:
         label = font.render(f"FPS: {fps}", True, BLACK)
     label_rect = label.get_rect(bottomleft=(10, WINDOW_HEIGHT-10))
@@ -165,6 +164,7 @@ def display_alive_count(window, population):
     window.blit(label, label_rect)
 
 
+# Optimization for drawing neural network
 def prerender_node_ids() -> list:
     renders = []
     font = pygame.font.Font(FONT, NODE_ID_FONT_SIZE)
