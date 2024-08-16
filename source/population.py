@@ -9,8 +9,9 @@ import math
 
 
 class Population:
-    def __init__(self, size: int) -> None:
-        self.config: NeatConfig = NeatConfig()
+    def __init__(self, config: NeatConfig, size: int) -> None:
+        self.config: NeatConfig = config
+        self.size = size
         self.innovation_history: list[InnovationHistory] = []
         self.players: list[Player] = []
         self.best_player: Player | None = None

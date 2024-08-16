@@ -3,6 +3,7 @@ from player import Player
 from ground import Ground
 from pipe import DoublePipeSet
 from population import Population
+from neat_config import NeatConfig
 
 import pygame
 
@@ -24,7 +25,8 @@ def main():
         With small population it is possible that NEAT will have to be redone ("RESET" message), but with big population
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
-    population = Population(size=50)
+    config = NeatConfig()
+    population = Population(config, size=20)
 
     human_playing = False
     show_fps = True
@@ -71,7 +73,7 @@ def main():
             # print(([player.score for player in population.players if player.alive]))
 
             if population.staleness >= 5:
-                population = Population(len(population.players))
+                population = Population(config, population.size)
                 pipes = DoublePipeSet()
                 display_reset(window)
 
@@ -101,6 +103,7 @@ def display_generation(window, population: Population):
     font = pygame.font.SysFont(FONT, GENERATION_FONT_SIZE)
     label = font.render(f"Gen: {current_generation}", True, BLACK)
     label_rect = label.get_rect(topleft=(10, 10))
+
     window.blit(label, label_rect)
 
 
@@ -116,6 +119,7 @@ def display_reset(window):
     font = pygame.font.SysFont(FONT, RESET_FONT_SIZE)
     label = font.render("RESET", True, RED)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 5))
+
     window.blit(label, label_rect)
     pygame.display.update()
     pygame.time.delay(1000)
@@ -125,6 +129,7 @@ def display_fps(window, fps):
     font = pygame.font.SysFont(FONT, FPS_FONT_SIZE)
     label = font.render(f"FPS: {fps}", True, BLACK)
     label_rect = label.get_rect(bottomleft=(10, WINDOW_HEIGHT-10))
+
     window.blit(label, label_rect)
 
 
