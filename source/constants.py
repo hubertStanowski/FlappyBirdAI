@@ -1,9 +1,7 @@
 import pygame
 
-# Dimensions
 WINDOW_WIDTH = 480
 WINDOW_HEIGHT = 640
-
 
 PLAYER_X = WINDOW_WIDTH // 3
 PLAYER_Y = WINDOW_HEIGHT // 2
@@ -28,17 +26,14 @@ GROUND_IMG = pygame.image.load("images/ground.png")
 BACKGROUND_IMG = pygame.image.load("images/background.png")
 PIPE_IMG = pygame.image.load("images/pipe.png")
 
-
 # Pipes
 TOP = 1
 BOTTOM = 0
 PIPE_GAP = 100  # for human player increase it if having trouble
 PIPE_SEPERATION = 280
 
-
 # Colors
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 RED = (255, 0, 0)
 BLUE = (0, 0, 255)
-SKY_COLOR = (102, 178, 255)
