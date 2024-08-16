@@ -33,7 +33,7 @@ class NodeGene:
             self.output_value = self.sigmoid(self.input_sum)
 
         for current_connection in self.output_connections:
-            if current_connection.enable:
+            if current_connection.enabled:
                 current_connection.output.input_sum += current_connection.weight * self.output_value
 
     def clone(self) -> 'NodeGene':

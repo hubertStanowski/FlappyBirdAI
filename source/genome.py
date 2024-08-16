@@ -215,7 +215,7 @@ class Genome:
             child_enable = True
 
             if parent_connection != -1:
-                if not self.connections[i].enable or not parent.connections[parent_connection].enable:
+                if not self.connections[i].enabled or not parent.connections[parent_connection].enabled:
                     if random.random() < config.get_crossover_connection_disable_probablility():
                         child_enable = False
 
@@ -228,14 +228,14 @@ class Genome:
 
             else:
                 new_child_connections.append(
-                    (self.connections[i], self.connections[i].enable))
+                    (self.connections[i], self.connections[i].enabled))
 
         for new_connection, new_enable in new_child_connections:
             child_input = child.get_node_by_id(new_connection.input.id)
             child_output = child.get_node_by_id(new_connection.output.id)
             child.connections.append(
                 new_connection.clone(child_input, child_output))
-            child.connections[-1].enable = new_enable
+            child.connections[-1].enabled = new_enable
 
         child.connect_nodes()
 
