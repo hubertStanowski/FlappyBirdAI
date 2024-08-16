@@ -150,7 +150,7 @@ class Genome:
             current_connection = random.randrange(0, len(self.connections))
             tries += 1
 
-        if tries >= 50:
+        if tries >= 10:
             print("BUG FIX WORKED")
             return
 

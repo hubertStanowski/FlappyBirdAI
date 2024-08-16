@@ -27,7 +27,7 @@ def main():
     """
     config = NeatConfig()
     node_id_renders = prerender_node_ids()
-    population = Population(config, size=90)
+    population = Population(config, size=75)
 
     human_playing = False
     show_fps = True
@@ -79,7 +79,7 @@ def main():
                 population.natural_selection()
                 pipes = DoublePipeSet()
 
-            if population.staleness >= config.get_population_staleness_limt():
+            if population.staleness >= config.get_population_staleness_limt() or (population.best_score == 0 and population.staleness >= config.get_population_staleness_limt() / 2):
                 population = Population(config, population.size)
                 pipes = DoublePipeSet()
                 display_reset(window)
