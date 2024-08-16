@@ -56,7 +56,7 @@ class PipeSet:
 
         return on_screen or off_screen
 
-    def check_passed(self, player_hitbox_x) -> bool:
+    def check_passed(self, player_hitbox_x: int) -> bool:
         if self.top.hitbox.right < player_hitbox_x and not self.passed:
             self.passed = True
             return True
@@ -74,7 +74,7 @@ class DoublePipeSet:
         for pipeset in self.pipesets:
             pipeset.draw(window)
 
-    def update(self, player_hitbox_x) -> None:
+    def update(self, player_hitbox_x: int) -> None:
         change = False
         for pipeset in self.pipesets:
             pipeset.update()
