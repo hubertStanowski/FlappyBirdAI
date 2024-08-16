@@ -26,7 +26,7 @@ def main():
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
     config = NeatConfig()
-    population = Population(config, size=50)
+    population = Population(config, size=150)
 
     human_playing = False
     show_fps = True
@@ -99,6 +99,8 @@ def main():
                         config.toggle_sensor_view()
 
             display_generation(window, population)
+            if config.sensor_view:
+                display_alive_count(window, population)
             if show_fps or config.sensor_view:
                 display_fps(window, fps)
 
@@ -138,6 +140,17 @@ def display_fps(window, fps):
     font = pygame.font.SysFont(FONT, FPS_FONT_SIZE)
     label = font.render(f"FPS: {fps}", True, BLACK)
     label_rect = label.get_rect(bottomleft=(10, WINDOW_HEIGHT-10))
+
+    window.blit(label, label_rect)
+
+
+def display_alive_count(window, population):
+    alive_count = len(
+        [player for player in population.players if player.alive])
+
+    font = pygame.font.SysFont(FONT, ALIVE_FONT_SIZE)
+    label = font.render(f"Alive: {alive_count}/{population.size}", True, RED)
+    label_rect = label.get_rect(topleft=(10, 50))
 
     window.blit(label, label_rect)
 
