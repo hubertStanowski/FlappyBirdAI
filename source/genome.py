@@ -146,7 +146,7 @@ class Genome:
         # Don't know how but it sometimes gets into an infinite loop even though a node can have just 1 connection with bias_node and if there are more than 1 connections
         # it shouldn't be possible to constatnly select the one with bias_node, but  this limit for tries should fix it regardless
         tries = 0
-        while self.connections[current_connection].input == self.nodes[self.bias_node] and len(self.connections) != 1 and tries < 50:
+        while self.connections[current_connection].input == self.nodes[self.bias_node] and len(self.connections) != 1 and tries < 10:
             current_connection = random.randrange(0, len(self.connections))
             tries += 1
 

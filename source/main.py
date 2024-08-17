@@ -27,7 +27,10 @@ def main():
     """
 
     config = NeatConfig()
-    config.draw_limit = 200        # lower this if lagging
+    # lower this if lagging
+    config.draw_limit = 200
+    # if you are impatient lower this, but recommended above 5
+    config.population_staleness_limt = 10
 
     node_id_renders = prerender_node_ids()
     population = Population(config, size=75)
@@ -121,7 +124,7 @@ def main():
         pygame.display.update()
 
 
-def display_generation(window, population: Population):
+def display_generation(window, population: Population) -> None:
     current_generation = population.generation
     font = pygame.font.SysFont(FONT, GENERATION_FONT_SIZE)
     label = font.render(f"Gen: {current_generation}", True, BLACK)
@@ -130,7 +133,7 @@ def display_generation(window, population: Population):
     window.blit(label, label_rect)
 
 
-def display_score(window, score: int):
+def display_score(window, score: int) -> None:
     font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
     label = font.render(str(score), True, BLACK)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, 30))
@@ -138,7 +141,7 @@ def display_score(window, score: int):
     window.blit(label, label_rect)
 
 
-def display_reset(window, ground: Ground):
+def display_reset(window, ground: Ground) -> None:
     font = pygame.font.SysFont(FONT, RESET_FONT_SIZE)
     label = font.render("RESET", True, RED)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
@@ -150,7 +153,7 @@ def display_reset(window, ground: Ground):
     pygame.time.delay(1000)
 
 
-def display_fps(window,  fps: int, clock, advanced: bool = False):
+def display_fps(window,  fps: int, clock, advanced: bool = False) -> None:
     font = pygame.font.SysFont(FONT, FPS_FONT_SIZE)
     actual = round(clock.get_fps(), 1)
     if advanced:
@@ -162,7 +165,7 @@ def display_fps(window,  fps: int, clock, advanced: bool = False):
     window.blit(label, label_rect)
 
 
-def display_alive_count(window, population: Population):
+def display_alive_count(window, population: Population) -> None:
     alive_count = len(
         [player for player in population.players if player.alive])
 
