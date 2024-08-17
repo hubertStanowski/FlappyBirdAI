@@ -41,7 +41,6 @@ class Population:
         return True
 
     def update_survivors(self, window, ground: Ground, pipes: DoublePipeSet, node_id_renders: list) -> None:
-        # TODO add draw_limit to config
         drawn_count = 0
         for player in self.players:
             if player.alive:
@@ -59,8 +58,8 @@ class Population:
                 self.gen_best_score = player.score
                 self.curr_best_player = player
 
-            if self.config.sensor_view:
-                self.curr_best_player.draw_network(window, node_id_renders)
+        if self.config.sensor_view:
+            self.curr_best_player.draw_network(window, node_id_renders)
 
     def natural_selection(self) -> None:
         if self.prev_gen_best_score >= self.gen_best_score:
