@@ -10,9 +10,9 @@ class InnovationHistory:
         )  # idk why autopep8 does this
 
     def matches(self, genome, input: NodeGene, output: NodeGene) -> bool:
-        if len(genome.connections) != len(self.connected_innovation_numbers):
-            return False
         if input.id != self.input or output.id != self.output:
+            return False
+        if len(genome.connections) != len(self.connected_innovation_numbers):
             return False
 
         for i in range(len(genome.connections)):

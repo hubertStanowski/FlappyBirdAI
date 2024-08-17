@@ -1,28 +1,28 @@
 class NeatConfig:
     def __init__(self) -> None:
         self.next_innovation_number: int = 1
-        self.weight_mutation_probablility = 0.8
-        self.add_connection_mutation_probability = 0.05
-        self.add_node_mutation_probablility = 0.01
-        self.big_weight_mutation_probablility = 0.1
-        self.crossover_connection_disable_probablility = 0.75
-        self.no_crossover_probability = 0.25
-        self.species_staleness_limit = 3
-        self.population_staleness_limt = 10
+        self.weight_mutation_probablility: float = 0.8
+        self.add_connection_mutation_probability: float = 0.05
+        self.add_node_mutation_probablility: float = 0.01
+        self.big_weight_mutation_probablility: float = 0.1
+        self.crossover_connection_disable_probablility: float = 0.75
+        self.no_crossover_probability: float = 0.25
+        self.species_staleness_limit: int = 3
+        self.population_staleness_limt: int = 10
         # compatibility coefficients: c1, c2, c3 and compatibility threshold (experimental values from article by creators of NEAT for not large population)
         self.excess_disjoint_coefficient: float = 1        # c1 = c2
         self.weight_difference_coefficient: float = 0.4    # c3
         self.compatibility_threshold: float = 3
 
         # View settings
-        self.sensor_view = False
-        self.show_dying = False
-        self.draw_limit = 100
+        self.sensor_view: bool = False
+        self.show_dying: bool = False
+        self.draw_limit: int = 100
 
     def get_next_innovation_number(self) -> int:
         return self.get_next_innovation_number
 
-    def update_next_innovation_number(self) -> int:
+    def update_next_innovation_number(self) -> None:
         self.next_innovation_number += 1
 
     def get_weight_mutation_probablility(self) -> float:
