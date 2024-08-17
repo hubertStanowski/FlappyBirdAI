@@ -112,9 +112,13 @@ class Species:
         return len(genome1.connections) + len(genome2.connections) - 2 * match_count
 
     def reproduce(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> Player:
+        if len(self.players) < 1:
+            return
         if random.random() < config.get_no_crossover_probability():
             child = self.select_player().clone()
         else:
+            if len(self.players) < 2:
+                return
             parent1 = self.select_player()
             parent2 = self.select_player()
 
@@ -139,5 +143,3 @@ class Species:
             running_sum += player.fitness
             if running_sum >= random_threshold:
                 return player
-
-        return self.players[-1]
