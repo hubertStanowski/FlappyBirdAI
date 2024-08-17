@@ -8,9 +8,6 @@ from neat_config import NeatConfig
 import pygame
 
 
-# TODO display show_dying value in sensor view
-# TODO in population limit drawing to 200
-
 def main():
     pygame.init()
 
@@ -134,7 +131,7 @@ def display_generation(window, population: Population):
     window.blit(label, label_rect)
 
 
-def display_score(window, score):
+def display_score(window, score: int):
     font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
     label = font.render(str(score), True, BLACK)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, 30))
@@ -152,7 +149,7 @@ def display_reset(window):
     pygame.time.delay(1000)
 
 
-def display_fps(window,  fps, clock, advanced=False):
+def display_fps(window,  fps: int, clock, advanced: bool = False):
     font = pygame.font.SysFont(FONT, FPS_FONT_SIZE)
     actual = round(clock.get_fps(), 1)
     if advanced:
@@ -164,7 +161,7 @@ def display_fps(window,  fps, clock, advanced=False):
     window.blit(label, label_rect)
 
 
-def display_alive_count(window, population):
+def display_alive_count(window, population: Population):
     alive_count = len(
         [player for player in population.players if player.alive])
 
