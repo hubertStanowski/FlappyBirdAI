@@ -1,14 +1,11 @@
-
 import math
-
-# TODO ? specify layer when initializing ?
 
 
 class NodeGene:
-    def __init__(self, id: int) -> None:
+    def __init__(self, id: int, layer: int = None) -> None:
         self.id: int = id
-        self.layer: int = 0
-        self.output_connections = []
+        self.layer: int = layer
+        self.output_connections: list = []
         self.input_sum: float = 0
         self.output_value: float = 0
 
@@ -24,7 +21,7 @@ class NodeGene:
 
         return False
 
-    def sigmoid(self, x) -> float:
+    def sigmoid(self, x: float) -> float:
         # Modified formula from creators of NEAT
         return 1.0 / (1.0 + math.exp(-4.9 * x))
 
@@ -37,7 +34,4 @@ class NodeGene:
                 current_connection.output.input_sum += current_connection.weight * self.output_value
 
     def clone(self) -> 'NodeGene':
-        clone = NodeGene(self.id)
-        clone.layer = self.layer
-
-        return clone
+        return NodeGene(self.id, self.layer)

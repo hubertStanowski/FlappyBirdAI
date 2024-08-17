@@ -22,17 +22,14 @@ class Genome:
             return
 
         for _ in range(self.inputs):
-            self.nodes.append(NodeGene(self.next_node_id))
-            self.nodes[self.next_node_id].layer = 0
+            self.nodes.append(NodeGene(self.next_node_id, layer=0))
             self.next_node_id += 1
 
         for _ in range(self.outputs):
-            self.nodes.append(NodeGene(self.next_node_id))
-            self.nodes[self.next_node_id].layer = 1
+            self.nodes.append(NodeGene(self.next_node_id, layer=1))
             self.next_node_id += 1
 
-        self.nodes.append(NodeGene(self.next_node_id))
-        self.nodes[self.next_node_id].layer = 0
+        self.nodes.append(NodeGene(self.next_node_id, layer=0))
         self.bias_node = self.next_node_id
         self.next_node_id += 1
 
@@ -128,12 +125,10 @@ class Genome:
             self.connections[i].input.output_connections.append(
                 self.connections[i])
 
-    def get_node_by_id(self, target_id: int) -> NodeGene | None:
+    def get_node_by_id(self, target_id: int) -> NodeGene:
         for i in range(len(self.nodes)):
             if self.nodes[i].id == target_id:
                 return self.nodes[i]
-
-        return None
 
     def add_node(self, config: NeatConfig, innovation_history: InnovationHistory) -> None:
         if len(self.connections) == 0:
