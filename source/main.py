@@ -44,7 +44,6 @@ def main():
     #         if event.type == pygame.KEYDOWN:
     #             if event.key == pygame.K_SPACE:
     #                 temp = False
-
     while True:
         clock.tick(fps)
 
@@ -142,8 +141,9 @@ def display_score(window, score: int):
 def display_reset(window):
     font = pygame.font.SysFont(FONT, RESET_FONT_SIZE)
     label = font.render("RESET", True, RED)
-    label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 5))
+    label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
 
+    window.blit(BACKGROUND_IMG, (0, 0))
     window.blit(label, label_rect)
     pygame.display.update()
     pygame.time.delay(1000)
