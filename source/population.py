@@ -99,7 +99,8 @@ class Population:
         self.players = children.copy()
         self.generation += 1
         for player in self.players:
-            player.genome.generate_network()
+            if player:
+                player.genome.generate_network()
 
     def speciate(self) -> None:
         for s in self.species:
