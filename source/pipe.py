@@ -1,13 +1,15 @@
 from constants import *
 
+import pygame
 import random
 from collections import deque
 
 
 class Pipe:
-    def __init__(self, x, y, position) -> None:
-        self.img = PIPE_IMG
-        self.hitbox = self.img.get_rect()
+    def __init__(self, x: float, y: float, position: int) -> None:
+        self.img: pygame.Surface = PIPE_IMG
+        self.hitbox: pygame.Rect = self.img.get_rect()
+
         if position == TOP:
             self.img = pygame.transform.flip(
                 self.img, flip_x=False, flip_y=True)
@@ -15,7 +17,7 @@ class Pipe:
         else:
             self.hitbox.topleft = (x, y + (PIPE_GAP // 2))
 
-    def draw(self, window) -> None:
+    def draw(self, window: pygame.Surface) -> None:
         window.blit(self.img, self.hitbox)
 
     def update(self) -> None:
@@ -23,15 +25,15 @@ class Pipe:
 
 
 class PipeSet:
-    def __init__(self, x_offset=0) -> None:
+    def __init__(self, x_offset: float = 0) -> None:
         pipe_height = random.randint(-200, 150)
-        self.bottom = Pipe(WINDOW_WIDTH+x_offset,
-                           WINDOW_HEIGHT // 2 + pipe_height, BOTTOM)
-        self.top = Pipe(WINDOW_WIDTH+x_offset,
-                        WINDOW_HEIGHT // 2 + pipe_height, TOP)
-        self.passed = False
+        self.bottom: Pipe = Pipe(WINDOW_WIDTH+x_offset,
+                                 WINDOW_HEIGHT // 2 + pipe_height, BOTTOM)
+        self.top: Pipe = Pipe(WINDOW_WIDTH+x_offset,
+                              WINDOW_HEIGHT // 2 + pipe_height, TOP)
+        self.passed: bool = False
 
-    def draw(self, window) -> None:
+    def draw(self, window: pygame.Surface) -> None:
         self.bottom.draw(window)
         self.top.draw(window)
 
@@ -68,9 +70,9 @@ class DoublePipeSet:
     def __init__(self) -> None:
         self.pipesets: deque[PipeSet] = deque(
             [PipeSet(), PipeSet(x_offset=PIPE_SEPERATION)])
-        self.score = 0
+        self.score: int = 0
 
-    def draw(self, window) -> None:
+    def draw(self, window: pygame.Surface) -> None:
         for pipeset in self.pipesets:
             pipeset.draw(window)
 
