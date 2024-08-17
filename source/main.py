@@ -35,7 +35,7 @@ def main():
     human_playing = False
     show_fps = True
 
-    # With big population or sensor_view enabled actual fps count will be lower
+    # With big population or sensor_view enabled actual fps count will be lower optimally keep between 60-120
     fps = 60
 
     # temp = True
@@ -84,7 +84,7 @@ def main():
             if population.staleness >= config.get_population_staleness_limt() or (population.best_score == 0 and population.staleness >= config.get_population_staleness_limt() / 2):
                 population = Population(config, population.size)
                 pipes = DoublePipeSet()
-                display_reset(window)
+                display_reset(window, ground)
 
             score = population.gen_best_score
             for event in pygame.event.get():
@@ -93,11 +93,11 @@ def main():
                 if event.type == pygame.KEYDOWN:
                     # Plus is on the same key as equals on most keyboards so checking for equals
                     if event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS:
-                        fps = min(240, fps+10)
+                        fps = min(FPS_HIGHER_BOUND, fps+10)
                     elif event.key == pygame.K_MINUS:
                         fps -= 10
-                        if fps < 10:
-                            fps = 10
+                        if fps < FPS_LOWER_BOUND:
+                            fps = FPS_LOWER_BOUND
                     elif event.key == pygame.K_d:
                         config.toggle_show_dying()
                     elif event.key == pygame.K_s:
@@ -138,12 +138,13 @@ def display_score(window, score: int):
     window.blit(label, label_rect)
 
 
-def display_reset(window):
+def display_reset(window, ground: Ground):
     font = pygame.font.SysFont(FONT, RESET_FONT_SIZE)
     label = font.render("RESET", True, RED)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
 
     window.blit(BACKGROUND_IMG, (0, 0))
+    ground.draw(window)
     window.blit(label, label_rect)
     pygame.display.update()
     pygame.time.delay(1000)

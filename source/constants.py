@@ -19,6 +19,9 @@ NODE_ID_FONT_SIZE = 22
 SCROLL_SPEED = 3
 GRAVITY = 0.5
 FLAP_SPEED = 8
+FPS_LOWER_BOUND = 10
+FPS_HIGHER_BOUND = 240
+
 
 # Images
 PLAYER_IMG = pygame.image.load("images/bird.png")
