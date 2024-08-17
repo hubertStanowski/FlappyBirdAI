@@ -33,7 +33,7 @@ def main():
     config.population_staleness_limt = 10
 
     node_id_renders = prerender_node_ids()
-    population = Population(config, size=75)
+    population = Population(config, size=100)
 
     human_playing = False
     show_fps = True

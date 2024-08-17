@@ -54,7 +54,8 @@ class Population:
                 player.draw(window, sensor_view=self.config.sensor_view)
                 drawn_count += 1
 
-            if player.score > self.gen_best_score:
+            # not necessary but if possible show bigger network
+            if player.score > self.gen_best_score or (player.score == self.gen_best_score and (len(player.genome.connections) > len(self.curr_best_player.genome.connections))):
                 self.gen_best_score = player.score
                 self.curr_best_player = player
 

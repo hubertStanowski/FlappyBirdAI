@@ -19,7 +19,7 @@ NODE_ID_FONT_SIZE = 22
 SCROLL_SPEED = 3
 GRAVITY = 0.5
 FLAP_SPEED = 8
-FPS_LOWER_BOUND = 10
+FPS_LOWER_BOUND = 30
 FPS_HIGHER_BOUND = 240
 
 
@@ -32,7 +32,7 @@ PIPE_IMG = pygame.image.load("images/pipe.png")
 # Pipes
 TOP = 1
 BOTTOM = 0
-PIPE_GAP = 100  # for human player increase it if having trouble
+PIPE_GAP = 98  # for human player increase it if having trouble
 PIPE_SEPERATION = 280
 
 # Colors
