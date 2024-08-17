@@ -17,6 +17,7 @@ class NeatConfig:
         # View settings
         self.sensor_view = False
         self.show_dying = False
+        self.draw_limit = 100
 
     def get_next_innovation_number(self) -> int:
         return self.get_next_innovation_number
@@ -63,3 +64,6 @@ class NeatConfig:
 
     def toggle_show_dying(self) -> None:
         self.show_dying = not self.show_dying
+
+    def get_draw_limit(self) -> int:
+        return self.draw_limit

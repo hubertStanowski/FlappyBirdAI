@@ -28,9 +28,12 @@ def main():
         With small population it is possible that NEAT will have to be redone ("RESET" message), but with big population
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
+
     config = NeatConfig()
+    config.draw_limit = 200        # lower this if lagging
+
     node_id_renders = prerender_node_ids()
-    population = Population(config, size=375)
+    population = Population(config, size=75)
 
     human_playing = False
     show_fps = True
