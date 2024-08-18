@@ -11,7 +11,7 @@ import math
 class Population:
     def __init__(self, config: NeatConfig, size: int) -> None:
         self.config: NeatConfig = config
-        self.size = size
+        self.size: int = size
         self.innovation_history: list[InnovationHistory] = []
         self.players: list[Player] = []
         self.best_player: Player = None
@@ -22,7 +22,7 @@ class Population:
         self.curr_best_player: Player = None
         self.generation: int = 1
         self.species: list[Species] = []
-        self.staleness = 0
+        self.staleness: int = 0
 
         for i in range(size):
             self.players.append(Player())
@@ -81,7 +81,7 @@ class Population:
         average_fitness_sum = self.get_avg_fitness_sum()
         children = []
         for s in self.species:
-            children.append(s.best_player.clone())
+            children.append(s.representative.clone())
             children_count = math.floor((s.average_fitness /
                                          average_fitness_sum * len(self.players)) - 1)
 

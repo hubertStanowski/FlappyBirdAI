@@ -8,23 +8,52 @@ import math
 
 
 class Species:
-    def __init__(self, first_member: Player) -> None:
-        self.players: list[Player] = [first_member]
-        self.best_player: Player = first_member.clone()
-        self.representative: Genome = first_member.genome.clone()
+    def __init__(self, representative: Player) -> None:
+        self.players: list[Player] = [representative]
+        self.representative: Player = representative
         self.best_fitness: float = 0
         self.average_fitness: float = self.best_fitness
         self.staleness: int = 0
 
-    def add(self, new: Player) -> None:
-        self.players.append(new)
-
-    def update_average_fitness(self) -> None:
-        if not self.players:
+    def reproduce(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> Player:
+        if len(self.players) < 1:
             return
 
-        self.average_fitness = sum(
-            [player.fitness for player in self.players]) / len(self.players)
+        if random.random() < config.get_no_crossover_probability():
+            child = self.select_player().clone()
+        else:
+            if len(self.players) < 2:
+                return
+            parent1 = self.select_player()
+            parent2 = self.select_player()
+
+            if parent1.fitness > parent2.fitness:
+                child = parent1.crossover(config, parent2)
+            else:
+                child = parent2.crossover(config, parent1)
+
+        child.genome.mutate(config, innovation_history)
+
+        return child
+
+    def is_this_species(self, config: NeatConfig, tested_genome: Genome) -> bool:
+        """
+            Compare a tested_genome to species representative and returns whether it is close enough to it to be considered the same species,
+            based on compatibility coefficients and compatibility threshold defined beforehand by the user.
+        """
+        # Formula for large_genome_normalizer given in the article by creators of NEAT
+        large_genome_normalizer = max(len(tested_genome.connections) - 20, 1)
+
+        average_weight_difference = self.get_average_weight_difference(
+            tested_genome, self.representative.genome)
+        excess_disjoint_count = self.get_excess_disjoint_count(
+            tested_genome, self.representative.genome)
+
+        # Formula for compatibility given in the article by creators of NEAT
+        compatibility = (config.get_excess_disjoint_coefficient() * excess_disjoint_count /
+                         large_genome_normalizer) + (config.get_weight_difference_coefficient() * average_weight_difference)
+
+        return compatibility < config.get_compatibility_threshold()
 
     def sort(self) -> None:
         if not self.players:
@@ -36,14 +65,9 @@ class Species:
         if self.players[0].fitness > self.best_fitness:
             self.staleness = 0
             self.best_fitness = self.players[0].fitness
-            self.representative = self.players[0].genome.clone()
-            self.best_player = self.players[0].clone()
+            self.representative = self.players[0]
         else:
             self.staleness += 1
-
-    def share_fitness(self) -> None:
-        for player in self.players:
-            player.fitness /= len(self.players)
 
     def remove_low_performers(self) -> None:
         """
@@ -55,25 +79,6 @@ class Species:
 
         for _ in range(len(self.players) // 2):
             self.players.pop()
-
-    def is_this_species(self, config: NeatConfig, tested_genome: Genome) -> bool:
-        """
-            Compares a tested_genome to species representative and returns whether it is close enough to it to be considered the same species,
-            based on compatibility coefficients and compatibility threshold defined beforehand by the user.
-        """
-        # Formula for large_genome_normalizer given in the article by creators of NEAT
-        large_genome_normalizer = max(len(tested_genome.connections) - 20, 1)
-
-        average_weight_difference = self.get_average_weight_difference(
-            tested_genome, self.representative)
-        excess_disjoint_count = self.get_excess_disjoint_count(
-            tested_genome, self.representative)
-
-        # Formula for compatibility given in the article by creators of NEAT
-        compatibility = (config.get_excess_disjoint_coefficient() * excess_disjoint_count /
-                         large_genome_normalizer) + (config.get_weight_difference_coefficient() * average_weight_difference)
-
-        return compatibility < config.get_compatibility_threshold()
 
     def get_average_weight_difference(self, genome1: Genome, genome2: Genome) -> float:
         """
@@ -111,26 +116,6 @@ class Species:
 
         return len(genome1.connections) + len(genome2.connections) - 2 * match_count
 
-    def reproduce(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> Player:
-        if len(self.players) < 1:
-            return
-        if random.random() < config.get_no_crossover_probability():
-            child = self.select_player().clone()
-        else:
-            if len(self.players) < 2:
-                return
-            parent1 = self.select_player()
-            parent2 = self.select_player()
-
-            if parent1.fitness > parent2.fitness:
-                child = parent1.crossover(config, parent2)
-            else:
-                child = parent2.crossover(config, parent1)
-
-        child.genome.mutate(config, innovation_history)
-
-        return child
-
     def select_player(self) -> Player:
         """
             Select a player for reproduction
@@ -143,3 +128,17 @@ class Species:
             running_sum += player.fitness
             if running_sum >= random_threshold:
                 return player
+
+    def update_average_fitness(self) -> None:
+        if not self.players:
+            return
+
+        self.average_fitness = sum(
+            [player.fitness for player in self.players]) / len(self.players)
+
+    def share_fitness(self) -> None:
+        for player in self.players:
+            player.fitness /= len(self.players)
+
+    def add(self, new: Player) -> None:
+        self.players.append(new)
