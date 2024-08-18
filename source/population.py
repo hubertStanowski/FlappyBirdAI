@@ -15,13 +15,10 @@ class Population:
         self.size: int = size
         self.innovation_history: list[InnovationHistory] = []
         self.players: list[Player] = []
-        self.best_player: Player = None
-        self.best_score: int = 0
-        self.gen_best_score: int = 0
-        self.prev_gen_best_score: int = 0
-        self.curr_best_player: Player = None
-        self.generation: int = 1
         self.species: list[Species] = []
+        self.curr_best_player: Player = None
+        self.prev_best_player: Player = None
+        self.generation: int = 1
         self.staleness: int = 0
 
         for _ in range(size):
@@ -34,11 +31,7 @@ class Population:
             if not self.curr_best_player or len(self.players[-1].genome.nodes) > len(self.curr_best_player.genome.nodes):
                 self.curr_best_player = self.players[-1]
 
-    def finished(self) -> bool:
-        for player in self.players:
-            if player.alive or (player.flying and self.config.show_dying):
-                return False
-        return True
+        self.prev_best_player = self.curr_best_player
 
     def update_survivors(self, window: pygame.Surface, ground: Ground, pipes: DoublePipeSet, node_id_renders: list) -> None:
         drawn_count = 0
@@ -54,25 +47,21 @@ class Population:
                 player.draw(window, sensor_view=self.config.sensor_view)
                 drawn_count += 1
 
-            # not necessary but if possible show bigger network
-            if player.score > self.gen_best_score or (player.score == self.gen_best_score and (len(player.genome.connections) > len(self.curr_best_player.genome.connections))):
-                self.gen_best_score = player.score
+            # not necessary but if possible show a bigger network
+            if player.score > self.curr_best_player.score or (player.score == self.curr_best_player.score and (len(player.genome.connections) > len(self.curr_best_player.genome.connections))):
                 self.curr_best_player = player
 
         if self.config.sensor_view:
             self.curr_best_player.draw_network(window, node_id_renders)
 
     def natural_selection(self) -> None:
-        # Happens after the first generation so there will always be prev_best_player
-        if self.prev_gen_best_score >= self.gen_best_score:
+        # Happens after at least one generation so there will always be prev_best_player
+        if self.prev_best_player.score >= self.curr_best_player.score:
             self.staleness += 1
         else:
             self.staleness = 0
-        self.prev_gen_best_score = self.gen_best_score
+        self.prev_best_player = self.curr_best_player
 
-        # keep prev best as a pointer instaed of prev best score
-        prev_best = self.players[0]
-        self.gen_best_score = 0
         self.speciate()
         self.update_fitness()
         self.sort()
@@ -92,7 +81,7 @@ class Population:
                     self.config, self.innovation_history))
 
         if len(self.players) < self.size:
-            self.players.append(prev_best.clone())
+            self.players.append(self.prev_best_player.clone())
 
         while len(self.players) < self.size:
             self.players.append(self.species[0].reproduce(
@@ -102,6 +91,12 @@ class Population:
         for player in self.players:
             if player:
                 player.genome.generate_network()
+
+    def finished(self) -> bool:
+        for player in self.players:
+            if player.alive or (player.flying and self.config.show_dying):
+                return False
+        return True
 
     def speciate(self) -> None:
         for s in self.species:
@@ -117,12 +112,6 @@ class Population:
             if not assigned:
                 self.species.append(Species(player))
 
-    def sort(self) -> None:
-        for s in self.species:
-            s.sort()
-
-        self.species.sort(key=lambda s: s.best_fitness, reverse=True)
-
     def kill_low_performing_species(self) -> None:
         average_fitness_sum = self.get_avg_fitness_sum()
         kill_list = []
@@ -134,9 +123,15 @@ class Population:
         for i in kill_list:
             self.species.pop(i)
 
+    def remove_low_performers_from_species(self) -> None:
+        for species in self.species:
+            species.remove_low_performers()
+            species.share_fitness()
+            species.update_average_fitness()
+
     def kill_stale_species(self) -> None:
         kill_list = []
-        # starting at idx 2 so that top 2 species survive even if they are stale
+        # starting at idx 2 so that top 2 species survive even if they are stale (used after sorting)
         for i in range(2, len(self.species)):
             if self.species[i].staleness >= self.config.get_species_staleness_limit():
                 kill_list.append(i)
@@ -144,15 +139,15 @@ class Population:
         for i in kill_list:
             self.species.pop(i)
 
+    def sort(self) -> None:
+        for s in self.species:
+            s.sort()
+
+        self.species.sort(key=lambda s: s.best_fitness, reverse=True)
+
     def update_fitness(self) -> None:
         for player in self.players:
             player.update_fitness()
 
     def get_avg_fitness_sum(self) -> float:
         return sum(species.average_fitness for species in self.species)
-
-    def remove_low_performers_from_species(self) -> None:
-        for species in self.species:
-            species.remove_low_performers()
-            species.share_fitness()
-            species.update_average_fitness()

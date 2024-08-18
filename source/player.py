@@ -20,7 +20,6 @@ class Player:
         # NEAT
         self.fitness: float = 0
         self.lifespan: int = 0
-        # self.generation: int = 1
         self.genome_inputs: int = 4
         self.genome_outputs: int = 1
         self.genome: Genome = Genome(self.genome_inputs, self.genome_outputs)
@@ -76,7 +75,6 @@ class Player:
         clone = Player()
         clone.genome = self.genome.clone()
         clone.fitness = self.fitness
-        # clone.generation = self.generation
         clone.genome.generate_network()
 
         return clone

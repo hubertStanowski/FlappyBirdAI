@@ -75,7 +75,6 @@ def main():
                     if event.key == pygame.K_SPACE:
                         h_player.flap()
 
-            score = h_player.score
         else:
             if not population.finished():
                 population.update_survivors(
@@ -84,12 +83,11 @@ def main():
                 population.natural_selection()
                 pipes = DoublePipeSet()
 
-            if population.staleness >= config.get_population_staleness_limt() or (population.best_score == 0 and population.staleness >= config.get_population_staleness_limt() / 2):
+            if population.staleness >= config.get_population_staleness_limt() or (population.prev_best_player.score == 0 and population.staleness >= config.get_population_staleness_limt() / 2):
                 population = Population(config, population.size)
                 pipes = DoublePipeSet()
                 display_reset(window, ground)
 
-            score = population.gen_best_score
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
@@ -119,7 +117,7 @@ def main():
             if show_fps or config.sensor_view:
                 display_fps(window, fps, clock, advanced=config.sensor_view)
 
-        display_score(window, score)
+        display_score(window, pipes.score)
 
         pygame.display.update()
 
