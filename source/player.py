@@ -10,25 +10,25 @@ from collections import defaultdict
 
 class Player:
     def __init__(self) -> None:
-        self.img = PLAYER_IMG
-        self.hitbox = self.img.get_rect()
+        self.img: pygame.Surface = PLAYER_IMG
+        self.hitbox: pygame.Rect = self.img.get_rect()
         self.hitbox.center = (PLAYER_X, PLAYER_Y)
-        self.vel = 0
-        self.alive = True
-        self.on_ground = False
-        self.flying = True
-        self.score = 0
+        self.vel: int = 0
+        self.alive: bool = True
+        self.flying: bool = True
+        # self.on_ground: bool = False
+        self.score: int = 0
         # NEAT
-        self.fitness: int = 0
-        self.lifespan = 0
-        self.generation = 1
-        self.genome_inputs = 4
-        self.genome_outputs = 1
+        self.fitness: float = 0
+        self.lifespan: int = 0
+        self.generation: int = 1
+        self.genome_inputs: int = 4
+        self.genome_outputs: int = 1
         self.genome: Genome = Genome(self.genome_inputs, self.genome_outputs)
-        self.vision = []
-        self.sensor_view_data = []
+        self.vision: list[float] = []
+        self.sensor_view_data: list[float] = []
 
-    def draw(self, window, sensor_view=False) -> None:
+    def draw(self, window: pygame.Surface, sensor_view: bool = False) -> None:
         if not self.flying and self.alive:
             current_img = self.img
         elif self.vel < 10:
@@ -38,14 +38,14 @@ class Player:
             current_img = pygame.transform.rotate(self.img, angle)
 
         window.blit(current_img, self.hitbox)
+
         if self.alive:
             if sensor_view and self.sensor_view_data:
                 for point in self.sensor_view_data:
-                    pygame.draw.line(window, RED,
-                                     self.hitbox.center, point, 2)
+                    pygame.draw.line(window, RED, self.hitbox.center, point, 2)
 
     def update(self, ground: Ground, pipes: DoublePipeSet) -> None:
-        if self.on_ground or not self.flying:
+        if not self.flying:
             return
 
         self.vel = min(self.vel + GRAVITY, FLAP_SPEED*2)
@@ -61,21 +61,19 @@ class Player:
             self.flying = True
             self.vel = -FLAP_SPEED
 
-    def check_collisions(self, ground: Ground, pipes: DoublePipeSet) -> bool:
+    def check_collisions(self, ground: Ground, pipes: DoublePipeSet) -> None:
         for pipeset in pipes.pipesets:
             if pipeset.collides(self):
                 self.alive = False
 
-        self.on_ground = ground.collides(self)
-        if self.on_ground:
+        # self.on_ground = ground.collides(self)
+        # if self.on_ground:
+        if ground.collides(self):
             self.alive = False
             self.flying = False
 
-        return self.alive
-
 
 # NEAT
-
 
     def clone(self) -> 'Player':
         clone = Player()
@@ -96,26 +94,24 @@ class Player:
     def update_fitness(self) -> None:
         self.fitness = 1 + self.score**2 + self.lifespan / 10
 
-    def remap(self, value, start1, stop1, start2, stop2) -> float:
-        """
-            Remaps a value in range(start1, stop1) proportionately to range(start2, stop2) and returns it
-        """
-        return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2
-
     def look(self, ground: Ground, pipes: DoublePipeSet) -> None:
+        def remap(value: float, start1: float, stop1: float, start2: float, stop2: float) -> float:
+            # Remaps a value in range(start1, stop1) proportionately to range(start2, stop2) and returns it
+            return (value - start1) / (stop1 - start1) * (stop2 - start2) + start2
+
         self.vision = []
         closest_pipeset = pipes.get_closest_pipeset()
         height_cap = WINDOW_HEIGHT-ground.hitbox.height - self.hitbox.height
 
-        self.vision.append(self.remap(
-            self.vel, -FLAP_SPEED, 2*FLAP_SPEED, -1, 1))
-        self.vision.append(self.remap(
-            closest_pipeset.top.hitbox.x - self.hitbox.x, 0, WINDOW_WIDTH-self.hitbox.x, 0, 1))
-        self.vision.append(self.remap(
-            closest_pipeset.bottom.hitbox.top - self.hitbox.y, 0, height_cap, 0, 1))
-        self.vision.append(self.remap(
-            self.hitbox.y - closest_pipeset.top.hitbox.bottom, 0, height_cap, 0, 1))
+        self.vision.append(remap(self.vel, -FLAP_SPEED, 2*FLAP_SPEED, -1, 1))
+        self.vision.append(remap(closest_pipeset.top.hitbox.x -
+                           self.hitbox.x, 0, WINDOW_WIDTH-self.hitbox.x, 0, 1))
+        self.vision.append(
+            remap(closest_pipeset.bottom.hitbox.top - self.hitbox.y, 0, height_cap, 0, 1))
+        self.vision.append(
+            remap(self.hitbox.y - closest_pipeset.top.hitbox.bottom, 0, height_cap, 0, 1))
 
+        # For drawing when sensor_view is on
         self.sensor_view_data = []
         self.sensor_view_data.append(closest_pipeset.bottom.hitbox.topleft)
         self.sensor_view_data.append(closest_pipeset.top.hitbox.bottomleft)
@@ -123,13 +119,13 @@ class Player:
     def decide(self) -> None:
         if not self.vision:
             return
-        decision = self.genome.feed_forward(self.vision)[0]
 
+        decision = self.genome.feed_forward(self.vision)[0]
         if decision > 0.6:
             self.flap()
 
 # Here and not in genome.py as that file is meant to be reusable and this function is not
-    def draw_network(self, window, node_id_renders) -> None:
+    def draw_network(self, window: pygame.Surface, node_id_renders: list[pygame.Surface]) -> None:
         if not self.genome.network:
             return
 
@@ -144,7 +140,6 @@ class Player:
         for node in self.genome.network:
             layers[node.layer].append(node)
 
-        # for clean connections
         node_pos = {}
 
         for layer, nodes in layers.items():
