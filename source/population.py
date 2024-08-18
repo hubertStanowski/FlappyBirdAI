@@ -6,6 +6,7 @@ from ground import Ground
 from pipe import DoublePipeSet
 
 import math
+import pygame
 
 
 class Population:
@@ -16,7 +17,6 @@ class Population:
         self.players: list[Player] = []
         self.best_player: Player = None
         self.best_score: int = 0
-        self.gen_players: list[Player] = []
         self.gen_best_score: int = 0
         self.prev_gen_best_score: int = 0
         self.curr_best_player: Player = None
@@ -24,7 +24,7 @@ class Population:
         self.species: list[Species] = []
         self.staleness: int = 0
 
-        for i in range(size):
+        for _ in range(size):
             self.players.append(Player())
             self.players[-1].genome.mutate(self.config,
                                            self.innovation_history)
@@ -40,7 +40,7 @@ class Population:
                 return False
         return True
 
-    def update_survivors(self, window, ground: Ground, pipes: DoublePipeSet, node_id_renders: list) -> None:
+    def update_survivors(self, window: pygame.Surface, ground: Ground, pipes: DoublePipeSet, node_id_renders: list) -> None:
         drawn_count = 0
         for player in self.players:
             if player.alive:
@@ -63,40 +63,41 @@ class Population:
             self.curr_best_player.draw_network(window, node_id_renders)
 
     def natural_selection(self) -> None:
+        # Happens after the first generation so there will always be prev_best_player
         if self.prev_gen_best_score >= self.gen_best_score:
             self.staleness += 1
         else:
             self.staleness = 0
         self.prev_gen_best_score = self.gen_best_score
 
+        # keep prev best as a pointer instaed of prev best score
         prev_best = self.players[0]
+        self.gen_best_score = 0
         self.speciate()
         self.update_fitness()
         self.sort()
         self.remove_low_performers_from_species()
-        self.update_best_player()
         self.kill_low_performing_species()
         self.kill_stale_species()
 
         average_fitness_sum = self.get_avg_fitness_sum()
-        children = []
+        self.players = []
         for s in self.species:
-            children.append(s.representative.clone())
+            self.players.append(s.representative.clone())
             children_count = math.floor((s.average_fitness /
                                          average_fitness_sum * len(self.players)) - 1)
 
-            for i in range(children_count):
-                children.append(s.reproduce(
+            for _ in range(children_count):
+                self.players.append(s.reproduce(
                     self.config, self.innovation_history))
 
-        if len(children) < len(self.players):
-            children.append(prev_best.clone())
+        if len(self.players) < self.size:
+            self.players.append(prev_best.clone())
 
-        while len(children) < len(self.players):
-            children.append(self.species[0].reproduce(
+        while len(self.players) < self.size:
+            self.players.append(self.species[0].reproduce(
                 self.config, self.innovation_history))
 
-        self.players = children.copy()
         self.generation += 1
         for player in self.players:
             if player:
@@ -135,7 +136,7 @@ class Population:
 
     def kill_stale_species(self) -> None:
         kill_list = []
-        # starting at idx 2 so that we have at least two species (better 2 stale ones than just having 1 or 0)
+        # starting at idx 2 so that top 2 species survive even if they are stale
         for i in range(2, len(self.species)):
             if self.species[i].staleness >= self.config.get_species_staleness_limit():
                 kill_list.append(i)
@@ -146,29 +147,6 @@ class Population:
     def update_fitness(self) -> None:
         for player in self.players:
             player.update_fitness()
-
-    def get_current_best(self) -> Player:
-        """
-        !ONLY USE AFTER SORTING!
-        """
-        # best player is the one with the highest fitness while being alive
-        for player in self.players:
-            if player.alive:
-                return player
-
-        # if every player is dead just return the one with the highest fitness
-        return self.players[0]
-
-    def update_best_player(self) -> None:
-        current_best = self.species[0].players[0]
-        current_best.generation = self.generation
-
-        if current_best.score >= self.best_score:
-            self.best_score = current_best.score
-            self.best_player = current_best.clone()
-            self.gen_players.append(current_best.clone())
-
-        self.gen_best_score = 0
 
     def get_avg_fitness_sum(self) -> float:
         return sum(species.average_fitness for species in self.species)
