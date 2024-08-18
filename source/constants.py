@@ -1,8 +1,10 @@
 import pygame
 
+# Window dimensions
 WINDOW_WIDTH = 480
 WINDOW_HEIGHT = 640
 
+# Player starting position
 PLAYER_X = WINDOW_WIDTH // 3
 PLAYER_Y = WINDOW_HEIGHT // 2
 
@@ -21,7 +23,6 @@ GRAVITY = 0.5
 FLAP_SPEED = 8
 FPS_LOWER_BOUND = 30
 FPS_HIGHER_BOUND = 240
-
 
 # Images
 PLAYER_IMG = pygame.image.load("images/bird.png")

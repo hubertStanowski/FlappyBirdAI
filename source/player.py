@@ -16,7 +16,6 @@ class Player:
         self.vel: int = 0
         self.alive: bool = True
         self.flying: bool = True
-        # self.on_ground: bool = False
         self.score: int = 0
         # NEAT
         self.fitness: float = 0
@@ -66,8 +65,6 @@ class Player:
             if pipeset.collides(self):
                 self.alive = False
 
-        # self.on_ground = ground.collides(self)
-        # if self.on_ground:
         if ground.collides(self):
             self.alive = False
             self.flying = False

@@ -4,33 +4,33 @@ from innovation_history import InnovationHistory
 from neat_config import NeatConfig
 
 import random
+import math
 
 
 class Species:
-    def __init__(self, representative: Player) -> None:
-        self.players: list[Player] = [representative]
-        self.representative: Player = representative.genome.clone()
+    def __init__(self, first_member: Player) -> None:
+        self.players: list[Player] = [first_member]
+        self.best_player: Player = first_member.clone()
+        self.representative: Genome = first_member.genome.clone()
         self.best_fitness: float = 0
-        self.best_player: Player = representative.clone()
         self.average_fitness: float = self.best_fitness
-        # if best_fitness of the species doesn't improve in 15 generations (number given by creators of NEAT) or user set cap -> don't allow reproduction
         self.staleness: int = 0
 
     def add(self, new: Player) -> None:
         self.players.append(new)
 
     def update_average_fitness(self) -> None:
-        if len(self.players) == 0:
+        if not self.players:
             return
+
         self.average_fitness = sum(
             [player.fitness for player in self.players]) / len(self.players)
 
     def sort(self) -> None:
-        if len(self.players) == 0:
-            self.staleness = 100
+        if not self.players:
+            self.staleness = math.inf
             return
 
-        # Sort self.players in descending order by fitness
         self.players.sort(key=lambda player: player.fitness, reverse=True)
 
         if self.players[0].fitness > self.best_fitness:
@@ -94,7 +94,7 @@ class Species:
                     break
 
         if match_count == 0:
-            return 100
+            return math.inf
 
         return diff_sum / match_count
 
