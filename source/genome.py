@@ -146,6 +146,7 @@ class Genome:
             tries += 1
 
         if tries >= 3:
+            self.add_connection(config, innovation_history)
             print("BUG FIX WORKED")
             return
 
