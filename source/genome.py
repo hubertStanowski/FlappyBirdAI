@@ -13,7 +13,6 @@ class Genome:
         self.connections: list[ConnectionGene] = []
         self.inputs: int = inputs
         self.outputs: int = outputs
-        # each genome consists of at least input and output layer (can have more hidden ones later on)
         self.layer_count: int = 2
         self.next_node_id: int = 0
         self.network: list[NodeGene] = []
@@ -38,8 +37,8 @@ class Genome:
             self.add_connection(config, innovation_history)
 
         if random.random() < config.get_weight_mutation_probablility():
-            for i in range(len(self.connections)):
-                self.connections[i].mutate_weight(config)
+            for connection in self.connections:
+                connection.mutate_weight(config)
 
         if random.random() < config.get_add_connection_mutation_probability():
             self.add_connection(config, innovation_history)
@@ -57,7 +56,6 @@ class Genome:
 
     def add_connection(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> None:
         if self.fully_connected():
-            print("CONNECTED")
             return
 
         node1 = random.randrange(0, len(self.nodes))
@@ -81,17 +79,17 @@ class Genome:
     def get_innovation_number(self, config: NeatConfig, innovation_history: list[InnovationHistory], input: NodeGene, output: NodeGene) -> int:
         new = True
         current_innovation_number = config.get_next_innovation_number()
-        for i in range(len(innovation_history)):
-            if innovation_history[i].matches(self, input, output):
+        for history in innovation_history:
+            if history.matches(self, input, output):
                 new = False
-                current_innovation_number = innovation_history[i].innovation_number
+                current_innovation_number = history.innovation_number
                 break
 
         if new:
             connected_innovation_numbers = []
-            for i in range(len(self.connections)):
+            for connection in self.connections:
                 connected_innovation_numbers.append(
-                    self.connections[i].innovation_number)
+                    connection.innovation_number)
 
             innovation_history.append(InnovationHistory(
                 input.id, output.id, current_innovation_number, connected_innovation_numbers))
@@ -104,8 +102,8 @@ class Genome:
         possible_connections = 0
         nodes_per_layer = defaultdict(int)
 
-        for i in range(len(self.nodes)):
-            nodes_per_layer[self.nodes[i].layer] += 1
+        for node in self.nodes:
+            nodes_per_layer[node.layer] += 1
 
         # possible connections for each layer are (node count of this layer) * (node count of all layers in front of it)
         for i in range(self.layer_count - 1):
@@ -118,17 +116,16 @@ class Genome:
         return possible_connections <= len(self.connections)
 
     def connect_nodes(self) -> None:
-        for i in range(len(self.nodes)):
-            self.nodes[i].output_connections = []
+        for node in self.nodes:
+            node.output_connections = []
 
-        for i in range(len(self.connections)):
-            self.connections[i].input.output_connections.append(
-                self.connections[i])
+        for connection in self.connections:
+            connection.input.output_connections.append(connection)
 
-    def get_node_by_id(self, target_id: int) -> NodeGene:
-        for i in range(len(self.nodes)):
-            if self.nodes[i].id == target_id:
-                return self.nodes[i]
+    def get_node(self, target_id: int) -> NodeGene:
+        for node in self.nodes:
+            if node.id == target_id:
+                return node
 
     def add_node(self, config: NeatConfig, innovation_history: InnovationHistory) -> None:
         if len(self.connections) == 0:
@@ -158,28 +155,28 @@ class Genome:
 
         # Connect with the input node of the selected connection
         current_innovation_number = self.get_innovation_number(
-            config, innovation_history, self.connections[current_connection].input, self.get_node_by_id(new_node_id))
+            config, innovation_history, self.connections[current_connection].input, self.get_node(new_node_id))
         self.connections.append(ConnectionGene(
-            self.connections[current_connection].input, self.get_node_by_id(new_node_id), 1, current_innovation_number))
+            self.connections[current_connection].input, self.get_node(new_node_id), 1, current_innovation_number))
 
         # Connect with the output node of the selected connection
         current_innovation_number = self.get_innovation_number(
-            config, innovation_history, self.get_node_by_id(new_node_id), self.connections[current_connection].output)
-        self.connections.append(ConnectionGene(self.get_node_by_id(
+            config, innovation_history, self.get_node(new_node_id), self.connections[current_connection].output)
+        self.connections.append(ConnectionGene(self.get_node(
             new_node_id), self.connections[current_connection].output, self.connections[current_connection].weight, current_innovation_number))
 
-        self.get_node_by_id(
+        self.get_node(
             new_node_id).layer = self.connections[current_connection].input.layer + 1
 
         # Connect with the bias node
         current_innovation_number = self.get_innovation_number(
-            config, innovation_history, self.nodes[self.bias_node], self.get_node_by_id(new_node_id))
-        self.connections.append(ConnectionGene(self.nodes[self.bias_node], self.get_node_by_id(
+            config, innovation_history, self.nodes[self.bias_node], self.get_node(new_node_id))
+        self.connections.append(ConnectionGene(self.nodes[self.bias_node], self.get_node(
             new_node_id), 0, current_innovation_number))
 
-        if self.get_node_by_id(new_node_id).layer == self.connections[current_connection].output.layer:
+        if self.get_node(new_node_id).layer == self.connections[current_connection].output.layer:
             for i in range(len(self.nodes) - 1):
-                if self.nodes[i].layer >= self.get_node_by_id(new_node_id).layer:
+                if self.nodes[i].layer >= self.get_node(new_node_id).layer:
                     self.nodes[i].layer += 1
 
             self.layer_count += 1
@@ -227,8 +224,8 @@ class Genome:
                     (self.connections[i], self.connections[i].enabled))
 
         for new_connection, new_enable in new_child_connections:
-            child_input = child.get_node_by_id(new_connection.input.id)
-            child_output = child.get_node_by_id(new_connection.output.id)
+            child_input = child.get_node(new_connection.input.id)
+            child_output = child.get_node(new_connection.output.id)
             child.connections.append(
                 new_connection.clone(child_input, child_output))
             child.connections[-1].enabled = new_enable
@@ -267,12 +264,13 @@ class Genome:
 
     def clone(self) -> 'Genome':
         clone = Genome(self.inputs, self.outputs, crossover=True)
+
         for node in self.nodes:
             clone.nodes.append(node.clone())
 
         for connection in self.connections:
-            clone.connections.append(connection.clone(clone.get_node_by_id(
-                connection.input.id), clone.get_node_by_id(connection.output.id)))
+            clone.connections.append(connection.clone(clone.get_node(
+                connection.input.id), clone.get_node(connection.output.id)))
 
         clone.layer_count = self.layer_count
         clone.next_node_id = self.next_node_id

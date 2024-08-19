@@ -37,7 +37,7 @@ def main():
     human_playing = False
 
     # With big population or sensor_view enabled actual fps count will be lower optimally keep between 60-120
-    fps = 60
+    fps = 80
 
     # temp = True
     # while temp:
