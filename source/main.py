@@ -16,27 +16,25 @@ def main():
     pygame.display.set_caption("Flappy Bird NEAT AI")
 
     clock = pygame.time.Clock()
+    config = NeatConfig()
+    node_id_renders = prerender_node_ids()
     ground = Ground()
     pipes = DoublePipeSet()
-    h_player = Player()
-    h_player.flying = False
+    human_player = Player()
+    human_player.flying = False
 
     """
         With small population it is possible that NEAT will have to be redone ("RESET" message), but with big population
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
+    population = Population(config, size=100)
 
-    config = NeatConfig()
     # lower this if lagging
     config.draw_limit = 200
     # if you are impatient lower this, but recommended above 5
     config.population_staleness_limt = 10
 
-    node_id_renders = prerender_node_ids()
-    population = Population(config, size=100)
-
     human_playing = False
-    show_fps = True
 
     # With big population or sensor_view enabled actual fps count will be lower optimally keep between 60-120
     fps = 60
@@ -52,28 +50,24 @@ def main():
 
         window.blit(BACKGROUND_IMG, (0, 0))
 
-        if h_player.flying or not human_playing:
-            pipes.update(h_player.hitbox.x)
-        pipes.draw(window)
-
-        if h_player.alive or not human_playing:
+        if human_player.flying or not human_playing:
+            pipes.update(human_player.hitbox.x)
+        if human_player.alive or not human_playing:
             ground.update()
 
-        if human_playing:
-            ground.draw(window)
-        else:
-            ground.draw(window, sensor_view=config.sensor_view)
+        pipes.draw(window)
+        ground.draw(window)
 
         if human_playing:
-            h_player.draw(window)
-            h_player.update(ground, pipes)
+            human_player.draw(window)
+            human_player.update(ground, pipes)
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     return
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
-                        h_player.flap()
+                        human_player.flap()
 
         else:
             if not population.finished():
@@ -99,9 +93,9 @@ def main():
                         fps -= 10
                         if fps < FPS_LOWER_BOUND:
                             fps = FPS_LOWER_BOUND
-                    elif event.key == pygame.K_d:
+                    elif event.key == pygame.K_LSHIFT or event.key == pygame.K_RSHIFT:
                         config.toggle_show_dying()
-                    elif event.key == pygame.K_s:
+                    elif event.key == pygame.K_SPACE:
                         config.toggle_sensor_view()
                         if config.sensor_view:
                             pygame.display.set_caption(
@@ -112,10 +106,9 @@ def main():
                         population.staleness = config.population_staleness_limt
 
             display_generation(window, population)
+            display_fps(window, fps, clock, advanced=config.sensor_view)
             if config.sensor_view:
                 display_alive_count(window, population)
-            if show_fps or config.sensor_view:
-                display_fps(window, fps, clock, advanced=config.sensor_view)
 
         display_score(window, pipes.score)
 

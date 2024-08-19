@@ -10,11 +10,8 @@ class Ground:
 
         self.hitbox.topleft = (0, WINDOW_HEIGHT-self.hitbox.height)
 
-    def draw(self, window: pygame.Surface, sensor_view: bool = False) -> None:
+    def draw(self, window: pygame.Surface) -> None:
         window.blit(GROUND_IMG, self.hitbox)
-        if sensor_view:
-            pygame.draw.line(window, RED, (self.hitbox.left,
-                             self.hitbox.top), (self.hitbox.right, self.hitbox.top), 4)
 
     def update(self) -> None:
         self.hitbox.x -= SCROLL_SPEED
