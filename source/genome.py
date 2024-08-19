@@ -13,6 +13,7 @@ class Genome:
         self.connections: list[ConnectionGene] = []
         self.inputs: int = inputs
         self.outputs: int = outputs
+        self.bias_node: int = None
         self.layer_count: int = 2
         self.next_node_id: int = 0
         self.network: list[NodeGene] = []
@@ -46,14 +47,6 @@ class Genome:
         if random.random() < config.get_add_node_mutation_probablility():
             self.add_node(config, innovation_history)
 
-    def not_useful_connection(self, node1: int, node2: int) -> bool:
-        if self.nodes[node1].layer == self.nodes[node2].layer:
-            return True
-        if self.nodes[node1].is_connected_to(self.nodes[node2]):
-            return True
-
-        return False
-
     def add_connection(self, config: NeatConfig, innovation_history: list[InnovationHistory]) -> None:
         if self.fully_connected():
             return
@@ -76,6 +69,105 @@ class Genome:
 
         self.connect_nodes()
 
+    def add_node(self, config: NeatConfig, innovation_history: InnovationHistory) -> None:
+        if not self.connections:
+            self.add_connection(config, innovation_history)
+            return
+
+        chosen_connection = random.randrange(0, len(self.connections))
+
+        # Limit tries to avoid infinite loops
+        # Don't know how but it sometimes gets into an infinite loop even though a node can have just 1 connection with bias_node and if there are more than 1 connections
+        # it shouldn't be possible to constantly select the one with bias_node, but this limit for tries should fix it regardless
+        tries = 0
+        while self.connections[chosen_connection].input == self.nodes[self.bias_node] and len(self.connections) != 1 and tries < 3:
+            chosen_connection = random.randrange(0, len(self.connections))
+            tries += 1
+
+        if tries >= 3:
+            self.add_connection(config, innovation_history)
+            return
+
+        self.connections[chosen_connection].disable()
+
+        new_node_id = self.next_node_id
+        self.next_node_id += 1
+        self.nodes.append(NodeGene(new_node_id))
+
+        # Connect with the input node of the selected connection
+        current_innovation_number = self.get_innovation_number(
+            config, innovation_history, self.connections[chosen_connection].input, self.get_node(new_node_id))
+        self.connections.append(ConnectionGene(
+            self.connections[chosen_connection].input, self.get_node(new_node_id), 1, current_innovation_number))
+
+        # Connect with the output node of the selected connection
+        current_innovation_number = self.get_innovation_number(
+            config, innovation_history, self.get_node(new_node_id), self.connections[chosen_connection].output)
+        self.connections.append(ConnectionGene(self.get_node(
+            new_node_id), self.connections[chosen_connection].output, self.connections[chosen_connection].weight, current_innovation_number))
+
+        self.get_node(
+            new_node_id).layer = self.connections[chosen_connection].input.layer + 1
+
+        # Connect with the bias node
+        current_innovation_number = self.get_innovation_number(
+            config, innovation_history, self.nodes[self.bias_node], self.get_node(new_node_id))
+        self.connections.append(ConnectionGene(self.nodes[self.bias_node], self.get_node(
+            new_node_id), 0, current_innovation_number))
+
+        if self.get_node(new_node_id).layer == self.connections[chosen_connection].output.layer:
+            for i in range(len(self.nodes) - 1):
+                if self.nodes[i].layer >= self.get_node(new_node_id).layer:
+                    self.nodes[i].layer += 1
+
+            self.layer_count += 1
+
+        self.connect_nodes()
+
+    def crossover(self, config: NeatConfig, parent: 'Genome') -> 'Genome':
+        child = Genome(self.inputs, self.outputs, crossover=True)
+        child.layer_count = self.layer_count
+        child.next_node_id = self.next_node_id
+        child.bias_node = self.bias_node
+
+        # First add here and then to child.connections to avoid duplicating complicated code
+        new_child_connections: list[ConnectionGene] = []
+
+        for node in self.nodes:
+            child.nodes.append(node.clone())
+
+        for connection in self.connections:
+            parent_connection = self.get_matching_connection(
+                parent, connection.innovation_number)
+            child_enable = True
+
+            if parent_connection != -1:
+                if not connection.enabled or not parent.connections[parent_connection].enabled:
+                    if random.random() < config.get_crossover_connection_disable_probablility():
+                        child_enable = False
+
+                if random.random() < 0.5:
+                    new_child_connections.append(
+                        (connection, child_enable))
+                else:
+                    new_child_connections.append(
+                        (parent.connections[parent_connection], child_enable))
+
+            else:
+                new_child_connections.append(
+                    (connection, connection.enabled))
+
+        for new_connection, new_enable in new_child_connections:
+            child_input = child.get_node(new_connection.input.id)
+            child_output = child.get_node(new_connection.output.id)
+            child.connections.append(
+                new_connection.clone(child_input, child_output))
+            child.connections[-1].enabled = new_enable
+
+        child.connect_nodes()
+
+        return child
+
     def get_innovation_number(self, config: NeatConfig, innovation_history: list[InnovationHistory], input: NodeGene, output: NodeGene) -> int:
         new = True
         current_innovation_number = config.get_next_innovation_number()
@@ -97,6 +189,14 @@ class Genome:
             config.update_next_innovation_number()
 
         return current_innovation_number
+
+    def not_useful_connection(self, node1: int, node2: int) -> bool:
+        if self.nodes[node1].layer == self.nodes[node2].layer:
+            return True
+        if self.nodes[node1].is_connected_to(self.nodes[node2]):
+            return True
+
+        return False
 
     def fully_connected(self) -> bool:
         possible_connections = 0
@@ -127,62 +227,6 @@ class Genome:
             if node.id == target_id:
                 return node
 
-    def add_node(self, config: NeatConfig, innovation_history: InnovationHistory) -> None:
-        if len(self.connections) == 0:
-            self.add_connection(config, innovation_history)
-            return
-
-        current_connection = random.randrange(0, len(self.connections))
-
-        # Limit tries at 50 to avoid infinite loops
-        # Don't know how but it sometimes gets into an infinite loop even though a node can have just 1 connection with bias_node and if there are more than 1 connections
-        # it shouldn't be possible to constatnly select the one with bias_node, but  this limit for tries should fix it regardless
-        tries = 0
-        while self.connections[current_connection].input == self.nodes[self.bias_node] and len(self.connections) != 1 and tries < 3:
-            current_connection = random.randrange(0, len(self.connections))
-            tries += 1
-
-        if tries >= 3:
-            self.add_connection(config, innovation_history)
-            print("BUG FIX WORKED")
-            return
-
-        self.connections[current_connection].disable()
-
-        new_node_id = self.next_node_id
-        self.next_node_id += 1
-        self.nodes.append(NodeGene(new_node_id))
-
-        # Connect with the input node of the selected connection
-        current_innovation_number = self.get_innovation_number(
-            config, innovation_history, self.connections[current_connection].input, self.get_node(new_node_id))
-        self.connections.append(ConnectionGene(
-            self.connections[current_connection].input, self.get_node(new_node_id), 1, current_innovation_number))
-
-        # Connect with the output node of the selected connection
-        current_innovation_number = self.get_innovation_number(
-            config, innovation_history, self.get_node(new_node_id), self.connections[current_connection].output)
-        self.connections.append(ConnectionGene(self.get_node(
-            new_node_id), self.connections[current_connection].output, self.connections[current_connection].weight, current_innovation_number))
-
-        self.get_node(
-            new_node_id).layer = self.connections[current_connection].input.layer + 1
-
-        # Connect with the bias node
-        current_innovation_number = self.get_innovation_number(
-            config, innovation_history, self.nodes[self.bias_node], self.get_node(new_node_id))
-        self.connections.append(ConnectionGene(self.nodes[self.bias_node], self.get_node(
-            new_node_id), 0, current_innovation_number))
-
-        if self.get_node(new_node_id).layer == self.connections[current_connection].output.layer:
-            for i in range(len(self.nodes) - 1):
-                if self.nodes[i].layer >= self.get_node(new_node_id).layer:
-                    self.nodes[i].layer += 1
-
-            self.layer_count += 1
-
-        self.connect_nodes()
-
     def get_matching_connection(self, parent: 'Genome', innovation_number: int) -> int:
         for i in range(len(parent.connections)):
             if parent.connections[i].innovation_number == innovation_number:
@@ -190,56 +234,12 @@ class Genome:
 
         return -1
 
-    def crossover(self, config: NeatConfig, parent: 'Genome'):
-        child = Genome(self.inputs, self.outputs, crossover=True)
-        child.layer_count = self.layer_count
-        child.next_node_id = self.next_node_id
-        child.bias_node = self.bias_node
-
-        # First add here and then to child.connections to avoid duplicating complicated code
-        new_child_connections: list[ConnectionGene] = []
-
-        for node in self.nodes:
-            child.nodes.append(node.clone())
-
-        for i in range(len(self.connections)):
-            parent_connection = self.get_matching_connection(
-                parent, self.connections[i].innovation_number)
-            child_enable = True
-
-            if parent_connection != -1:
-                if not self.connections[i].enabled or not parent.connections[parent_connection].enabled:
-                    if random.random() < config.get_crossover_connection_disable_probablility():
-                        child_enable = False
-
-                if random.random() < 0.5:
-                    new_child_connections.append(
-                        (self.connections[i], child_enable))
-                else:
-                    new_child_connections.append(
-                        (parent.connections[parent_connection], child_enable))
-
-            else:
-                new_child_connections.append(
-                    (self.connections[i], self.connections[i].enabled))
-
-        for new_connection, new_enable in new_child_connections:
-            child_input = child.get_node(new_connection.input.id)
-            child_output = child.get_node(new_connection.output.id)
-            child.connections.append(
-                new_connection.clone(child_input, child_output))
-            child.connections[-1].enabled = new_enable
-
-        child.connect_nodes()
-
-        return child
-
     def generate_network(self) -> None:
         self.connect_nodes()
         self.network = []
-        for current_layer in range(self.layer_count):
+        for layer in range(self.layer_count):
             for node in self.nodes:
-                if node.layer == current_layer:
+                if node.layer == layer:
                     self.network.append(node)
 
     def feed_forward(self, input_values: list[float]) -> list[float]:
@@ -249,7 +249,6 @@ class Genome:
 
         for node in self.network:
             node.engage()
-            # print(node.output_value)
 
         outputs = []
 
