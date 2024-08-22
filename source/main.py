@@ -8,7 +8,7 @@ from neat_config import NeatConfig
 import pygame
 
 
-def main():
+def main() -> None:
     pygame.init()
 
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
@@ -28,14 +28,12 @@ def main():
         it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
     """
     population = Population(config, size=100)
-
     # lower this if lagging
     config.draw_limit = 200
     # if you are impatient lower this, but recommended above 5
     config.population_staleness_limt = 10
 
     human_playing = False
-
     # With big population or sensor_view enabled actual fps count will be lower optimally keep between 60-120
     fps = 80
 
@@ -86,7 +84,7 @@ def main():
                 if event.type == pygame.QUIT:
                     return
                 if event.type == pygame.KEYDOWN:
-                    # Plus is on the same key as equals on most keyboards so checking for equals
+                    # Plus is on the same key as equals on most keyboards so checking for equals too
                     if event.key == pygame.K_EQUALS or event.key == pygame.K_PLUS:
                         fps = min(FPS_HIGHER_BOUND, fps+10)
                     elif event.key == pygame.K_MINUS:
@@ -115,7 +113,7 @@ def main():
         pygame.display.update()
 
 
-def display_generation(window, population: Population) -> None:
+def display_generation(window: pygame.Surface, population: Population) -> None:
     current_generation = population.generation
     font = pygame.font.SysFont(FONT, GENERATION_FONT_SIZE)
     label = font.render(f"Gen: {current_generation}", True, BLACK)
@@ -124,7 +122,7 @@ def display_generation(window, population: Population) -> None:
     window.blit(label, label_rect)
 
 
-def display_score(window, score: int) -> None:
+def display_score(window: pygame.Surface, score: int) -> None:
     font = pygame.font.SysFont(FONT, SCORE_FONT_SIZE)
     label = font.render(str(score), True, BLACK)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, 30))
@@ -132,7 +130,7 @@ def display_score(window, score: int) -> None:
     window.blit(label, label_rect)
 
 
-def display_reset(window, ground: Ground) -> None:
+def display_reset(window: pygame.Surface, ground: Ground) -> None:
     font = pygame.font.SysFont(FONT, RESET_FONT_SIZE)
     label = font.render("RESET", True, RED)
     label_rect = label.get_rect(center=(WINDOW_WIDTH // 2, WINDOW_HEIGHT // 3))
@@ -144,7 +142,7 @@ def display_reset(window, ground: Ground) -> None:
     pygame.time.delay(1000)
 
 
-def display_fps(window,  fps: int, clock, advanced: bool = False) -> None:
+def display_fps(window: pygame.Surface,  fps: int, clock: pygame.time.Clock, advanced: bool = False) -> None:
     font = pygame.font.SysFont(FONT, FPS_FONT_SIZE)
     actual = round(clock.get_fps(), 1)
     if advanced:
@@ -156,7 +154,7 @@ def display_fps(window,  fps: int, clock, advanced: bool = False) -> None:
     window.blit(label, label_rect)
 
 
-def display_alive_count(window, population: Population) -> None:
+def display_alive_count(window: pygame.Surface, population: Population) -> None:
     alive_count = len(
         [player for player in population.players if player.alive])
 

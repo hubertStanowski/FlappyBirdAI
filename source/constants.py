@@ -22,7 +22,7 @@ SCROLL_SPEED = 3
 GRAVITY = 0.5
 FLAP_SPEED = 8
 FPS_LOWER_BOUND = 30
-FPS_HIGHER_BOUND = 240
+FPS_HIGHER_BOUND = 160
 
 # Images
 PLAYER_IMG = pygame.image.load("images/bird.png")
