@@ -2,9 +2,11 @@
 
 Pure python implementation of NEAT algorithm for FlappyBird game. (graphics in pygame).
 
-Sample run (old version, but showcases algorithm well): https://youtube.com/shorts/nChl_u9HSmc
+Showcase video: https://youtu.be/0mKHcnQlVi0
 
 *Due to random nature of this algorithm it is possible there are bugs that I haven't encountered, in case of problems just restart the app*
+# Usage
+will upload all action keys and additional info later
 
 # Resources
 ## NEAT
