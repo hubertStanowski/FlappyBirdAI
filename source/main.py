@@ -4,6 +4,7 @@ from ground import Ground
 from pipe import DoublePipeSet
 from population import Population
 from neat_config import NeatConfig
+from user_config import *
 
 import pygame
 
@@ -23,26 +24,13 @@ def main() -> None:
     human_player = Player()
     human_player.flying = False
 
-    """
-        With small population it is possible that NEAT will have to be redone ("RESET" message), but with big population
-        it is likely that there will be no need for evolution due to how uncomplicated FlappyBird is
-    """
-    population = Population(config, size=100)
-    # lower this if lagging
-    config.draw_limit = 200
-    # if you are impatient lower this, but recommended above 5
-    config.population_staleness_limt = 10
+    # Constants added for ease of use for others, can hardcode the values here and remove user_config.py
+    population = Population(config, size=POPULATION_SIZE)
+    config.draw_limit = DRAW_LIMIT
+    config.population_staleness_limit = POPULATION_STALENESS_LIMIT
+    human_playing = HUMAN_PLAYING
+    fps = 80 if not human_playing else 60
 
-    human_playing = False
-    # With big population or sensor_view enabled actual fps count will be lower optimally keep between 60-120
-    fps = 80
-
-    # temp = True
-    # while temp:
-    #     for event in pygame.event.get():
-    #         if event.type == pygame.KEYDOWN:
-    #             if event.key == pygame.K_SPACE:
-    #                 temp = False
     while True:
         clock.tick(fps)
 
@@ -75,7 +63,7 @@ def main() -> None:
                 population.natural_selection()
                 pipes = DoublePipeSet()
 
-            if population.staleness >= config.get_population_staleness_limt() or (population.prev_best_player.score == 0 and population.staleness >= config.get_population_staleness_limt() / 2):
+            if population.staleness >= config.get_population_staleness_limit() or (population.prev_best_player.score == 0 and population.staleness >= config.get_population_staleness_limit() / 2):
                 population = Population(config, population.size)
                 pipes = DoublePipeSet()
                 display_reset(window, ground)
@@ -101,7 +89,7 @@ def main() -> None:
                         else:
                             pygame.display.set_caption("Flappy Bird NEAT AI")
                     elif event.key == pygame.K_BACKSPACE or event.key == pygame.K_DELETE:
-                        population.staleness = config.population_staleness_limt
+                        population.staleness = config.population_staleness_limit
 
             display_generation(window, population)
             display_fps(window, fps, clock, advanced=config.sensor_view)
