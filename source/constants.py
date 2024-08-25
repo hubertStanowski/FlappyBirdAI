@@ -1,5 +1,5 @@
 import pygame
-
+from user_config import HUMAN_PLAYING
 # Window dimensions
 WINDOW_WIDTH = 480
 WINDOW_HEIGHT = 640
@@ -33,7 +33,7 @@ PIPE_IMG = pygame.image.load("images/pipe.png")
 # Pipes
 TOP = 1
 BOTTOM = 0
-PIPE_GAP = 98  # for human player increase it if having trouble
+PIPE_GAP = 98 if not HUMAN_PLAYING else 120
 PIPE_SEPERATION = 280
 
 # Colors

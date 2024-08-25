@@ -54,6 +54,10 @@ def main() -> None:
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_SPACE:
                         human_player.flap()
+                        if not human_player.flying:
+                            human_player = Player()
+                            human_player.flying = False
+                            pipes = DoublePipeSet()
 
         else:
             if not population.finished():
