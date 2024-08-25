@@ -8,7 +8,7 @@ class NeatConfig:
         self.crossover_connection_disable_probablility: float = 0.75
         self.no_crossover_probability: float = 0.25
         self.species_staleness_limit: int = 3
-        self.population_staleness_limt: int = 10
+        self.population_staleness_limit: int = 10
         # compatibility coefficients: c1, c2, c3 and compatibility threshold (experimental values from article by creators of NEAT for not large population)
         self.excess_disjoint_coefficient: float = 1        # c1 = c2
         self.weight_difference_coefficient: float = 0.4    # c3
@@ -46,8 +46,8 @@ class NeatConfig:
     def get_species_staleness_limit(self) -> int:
         return self.species_staleness_limit
 
-    def get_population_staleness_limt(self) -> int:
-        return self.population_staleness_limt
+    def get_population_staleness_limit(self) -> int:
+        return self.population_staleness_limit
 
     def get_excess_disjoint_coefficient(self) -> float:
         return self.excess_disjoint_coefficient
