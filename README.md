@@ -2,7 +2,7 @@
 
 Pure python implementation of NEAT algorithm for FlappyBird game. (graphics in pygame).
 
-[![FlappyBirdAI Showcase](images/thumbnail.jpg)](https://youtu.be/0mKHcnQlVi0)
+[![FlappyBirdAI Demo](https://img.youtube.com/vi/0mKHcnQlVi0/0.jpg)](https://youtu.be/0mKHcnQlVi0)
 
 *Due to random nature of this algorithm it is possible there are bugs that I haven't encountered*
 # Usage
@@ -24,4 +24,4 @@ https://stackoverflow.com/questions/45463821/neat-what-is-a-good-compatability-t
 ## Graphics
 https://www.spriters-resource.com/fullview/59894/ - full sprite sheet
 
-https://www.pixilart.com/draw - for creating pixelart
+https://www.pixilart.com/draw - pixelart editor
