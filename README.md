@@ -2,6 +2,8 @@
 
 Pure python implementation of NEAT algorithm for FlappyBird game. (graphics in pygame).
 
+Showcase video on YouTube:
+
 [![FlappyBirdAI Demo](https://github.com/hubertStanowski/FlappyBirdAI/blob/master/images/thumbnail.png?raw=true)](https://youtu.be/0mKHcnQlVi0)
 
 *Due to random nature of this algorithm it is possible there are bugs that I haven't encountered*
