@@ -2,13 +2,10 @@
 
 Pure python implementation of NEAT algorithm for FlappyBird game. (graphics in pygame).
 
-Showcase video on YouTube:
+
 
 https://github.com/user-attachments/assets/d0628bd3-a902-46c0-9474-92f8636bc0ce
 
-
-
-[![FlappyBirdAI Demo](https://github.com/hubertStanowski/FlappyBirdAI/blob/master/images/thumbnail.png?raw=true)](https://youtu.be/0mKHcnQlVi0)
 
 *Due to random nature of this algorithm it is possible there are bugs that I haven't encountered*
 # Usage
@@ -18,6 +15,8 @@ will upload all action keys and additional info later
 https://youtu.be/WSW-5m8lRMs?si=Z0EUQAviZq7y31PR - inspiration (CodeBullet)
 
 https://flappybird.io/ - the original game
+
+https://youtu.be/0mKHcnQlVi0 - my demo video on YouTube (same as embeded above)
 ## NEAT
 https://neat-python.readthedocs.io/en/latest/neat_overview.html - overview
 
