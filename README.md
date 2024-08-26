@@ -4,7 +4,7 @@ Pure python implementation of NEAT algorithm for FlappyBird game. (graphics in p
 https://github.com/user-attachments/assets/d0628bd3-a902-46c0-9474-92f8636bc0ce
 
 > [!WARNING]
-> Due to random nature of this algorithm it is possible there are bugs that I haven't encountered
+> Due to random nature of this algorithm, it is possible there are bugs that I haven't encountered
 
 # Downloading and running
 ### Clone this repository
@@ -32,7 +32,7 @@ You can modify these settings in user_config.py file
 - You can toggle sensor view by pressing **SPACE** button
 - In sensor view you can see how the current best bird's neural network looks
 - Each bird will also have red lines from its center to the closest bottom and top pipe
-- Sensor view will also show you how many bird out of the current generation are still alive
+- Sensor view will also show you how many birds out of the current generation are still alive
 - Sensor view displays actual FPS which may differ from set FPS depending on population size
 - To turn off the sensor view press **SPACE** button again
 ### Resetting
@@ -52,7 +52,7 @@ You can modify these settings in user_config.py file
 
 - https://flappybird.io/ - the original game
 
-- https://youtu.be/0mKHcnQlVi0 - my demo video on YouTube (same as embeded above)
+- https://youtu.be/0mKHcnQlVi0 - my demo video on YouTube (same as embedded above)
 ## NEAT
 - https://neat-python.readthedocs.io/en/latest/neat_overview.html - overview
 
