@@ -17,7 +17,7 @@ https://github.com/user-attachments/assets/d0628bd3-a902-46c0-9474-92f8636bc0ce
     pip install -r requirements.txt
 
 ### Run the program
-    python main.py
+    python source/main.py
   
 # Usage
 ### Default settings
