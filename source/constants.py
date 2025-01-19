@@ -33,7 +33,7 @@ PIPE_IMG = pygame.image.load("images/pipe.png")
 # Pipes
 TOP = 1
 BOTTOM = 0
-PIPE_GAP = 106 if not HUMAN_PLAYING else 120
+PIPE_GAP = 100 if not HUMAN_PLAYING else 120
 PIPE_SEPERATION = 280
 
 # Colors
